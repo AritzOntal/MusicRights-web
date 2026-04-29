@@ -1,15 +1,24 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+//Importamos el servicio para poder llamarlo
+import { register } from '../services/authService'
+
+
 
 function RegisterPage() {
+  const navigate = useNavigate()
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
   const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
 
   // Se llama cuando el usuario pulsa "Registrarse"
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault() // evita que el form recargue la página
 
     if (username.trim().length < 3) {
@@ -26,8 +35,28 @@ function RegisterPage() {
     }
 
     setError(null)
-    console.log('Datos del registro:', { username, password })
-  }
+    setLoading(true)
+
+    try {
+          await register(username, password)
+          // Si no hay problema, cambiaremos de pagina con "navigate" (sin link)
+          navigate('/login', { replace: true })
+        } catch (err) {
+          // Si axios manda error, usaremos setError para verlo
+          if (axios.isAxiosError(err)) {
+            if (err.response) {
+              setError(`Error ${err.response.status}: no se pudo registrar el usuario`)
+            } else {
+              setError('No se pudo conectar con el servidor.')
+            }
+          } else {
+            setError('Error inesperado')
+          }
+        } finally {
+            //Siempre quitaremos el loading al acabar...
+          setLoading(false)
+        }
+      }
 
     return (
     <main className="min-h-screen flex items-center justify-center bg-slate-50">
