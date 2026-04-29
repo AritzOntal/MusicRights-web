@@ -119,6 +119,6 @@ function RegisterPage() {
       </form>
     </main>
     )
-    }
+}
 
     export default RegisterPage
