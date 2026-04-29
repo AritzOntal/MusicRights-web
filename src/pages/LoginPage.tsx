@@ -11,6 +11,12 @@ function LoginPage() {
         <Link to="/dashboard" className="text-blue-700 underline">
           Ir al dashboard
         </Link>
+        <p className="text-sm text-slate-600 text-center mt-4">
+          ¿No tienes cuenta?{' '}
+          <Link to="/register" className="text-blue-700 underline">
+            Regístrate
+          </Link>
+        </p>
       </div>
     </main>
   )
