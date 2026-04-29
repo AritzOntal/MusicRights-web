@@ -1,23 +1,97 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { login, TOKEN_STORAGE_KEY } from '../services/authService'
 
 function LoginPage() {
+  const navigate = useNavigate()
+
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setError(null)
+    setLoading(true)
+
+    try {
+      // Si todo va bien, recibimos el JWT.
+      const token = await login(username, password)
+
+      // Le damos persistencia en el navegador
+      localStorage.setItem(TOKEN_STORAGE_KEY, token)
+
+      // 3. Navegamos al dashboard
+      navigate('/dashboard', { replace: true })
+    } catch (err) {
+      // Manejo de forbidden o Unauthorized y desconocidos
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          setError('Usuario o contraseña incorrectos')
+        } else if (err.response) {
+          setError(`Error ${err.response.status}: no se pudo iniciar sesión`)
+        } else {
+          setError('No se pudo conectar con el servidor')
+        }
+      } else {
+        setError('Error inesperado')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <main className="min-h-screen flex items-center justify-center">
-      <div className="p-8 bg-white rounded-xl shadow border">
-        <h1 className="text-2xl font-bold mb-4">Login</h1>
-        <p className="text-slate-600 mb-4">
-        formuario de inicio
-        </p>
-        <Link to="/dashboard" className="text-blue-700 underline">
-          Ir al dashboard
-        </Link>
-        <p className="text-sm text-slate-600 text-center mt-4">
+    <main className="min-h-screen flex items-center justify-center bg-slate-50">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-sm p-8 bg-white rounded-xl shadow border space-y-4"
+      >
+        <h1 className="text-2xl font-bold mb-2">Iniciar sesión</h1>
+
+        <label className="block">
+          <span className="text-sm font-medium">Usuario</span>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            disabled={loading}
+            className="mt-1 w-full border rounded px-3 py-2"
+            autoComplete="username"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-medium">Contraseña</span>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
+            className="mt-1 w-full border rounded px-3 py-2"
+            autoComplete="current-password"
+          />
+        </label>
+
+        {error && <p className="text-sm text-red-600">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-700 text-white font-medium py-2 rounded hover:bg-blue-800 disabled:opacity-50"
+        >
+          {loading ? 'Entrando...' : 'Entrar'}
+        </button>
+
+        <p className="text-sm text-slate-600 text-center">
           ¿No tienes cuenta?{' '}
           <Link to="/register" className="text-blue-700 underline">
             Regístrate
           </Link>
         </p>
-      </div>
+      </form>
     </main>
   )
 }
