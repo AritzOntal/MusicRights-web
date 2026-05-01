@@ -4,6 +4,7 @@ import { useWorks } from '../hooks/useWorks'
 
 type SortColumn = 'title' | 'genre' | 'duration' | 'composedAt'
 
+
 function DashboardPage() {
   const { state, logout } = useAuth()
   const { works, loading, error } = useWorks()
@@ -11,6 +12,8 @@ function DashboardPage() {
   const [search, setSearch] = useState('')
   const [sortColumn, setSortColumn] = useState<SortColumn>('title')
   const [asc, setAsc] = useState(true)
+
+  const isUser = state.user?.role === 'USER'
 
   // Filtro por búsqueda
   const q = search.trim().toLowerCase()
@@ -71,6 +74,22 @@ function DashboardPage() {
           className="w-full border rounded px-3 py-2"
         />
 
+        {state.user?.role === 'ADMIN' && (
+          <p className="text-sm bg-red-50 border border-red-200 p-3 rounded">
+            Consulta todas la obras del sistema como: <b>administrador</b>
+          </p>
+        )}
+        {state.user?.role === 'MUSICIAN' && (
+          <p className="text-sm bg-yellow-50 border border-yellow-200 p-3 rounded">
+            Gestiona tu repertorio como: <b>músico</b>
+          </p>
+        )}
+        {state.user?.role === 'USER' && (
+          <p className="text-sm bg-blue-50 border border-blue-200 p-3 rounded">
+            Consulta le catálogo de obras como: <b>usuario</b>
+          </p>
+        )}
+
         {loading && <p>Cargando obras...</p>}
         {error && <p className="text-red-600">{error}</p>}
         {!loading && !error && sorted.length === 0 && <p>No hay obras.</p>}
@@ -83,7 +102,7 @@ function DashboardPage() {
                 <th onClick={() => toggleSort('genre')} className="p-2 text-left cursor-pointer">Género</th>
                 <th onClick={() => toggleSort('duration')} className="p-2 text-left cursor-pointer">Duración</th>
                 <th onClick={() => toggleSort('composedAt')} className="p-2 text-left cursor-pointer">Compuesta</th>
-                <th className="p-2 text-left">Registrada</th>
+                {!isUser && <th className="p-2 text-left">Registrada</th>}
               </tr>
             </thead>
             <tbody>
@@ -93,7 +112,7 @@ function DashboardPage() {
                   <td className="p-2">{w.genre}</td>
                   <td className="p-2">{w.duration ?? '—'}</td>
                   <td className="p-2">{w.composedAt ?? '—'}</td>
-                  <td className="p-2">{w.registred ? 'Sí' : 'No'}</td>
+                  {!isUser && <td className="p-2">{w.registred ? 'Sí' : 'No'}</td>}
                 </tr>
               ))}
             </tbody>
