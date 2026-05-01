@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { login, TOKEN_STORAGE_KEY } from '../services/authService'
+//Para evitar conflicto cambiamos nombre de import
+import { login as loginService } from '../services/authService'
+import { useAuth } from '../contexts/AuthContext'
+
+
 
 function LoginPage() {
   const navigate = useNavigate()
@@ -11,17 +15,16 @@ function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  const { login } = useAuth()
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
     setLoading(true)
 
     try {
-      // Si todo va bien, recibimos el JWT.
-      const token = await login(username, password)
-
-      // Le damos persistencia en el navegador
-      localStorage.setItem(TOKEN_STORAGE_KEY, token)
+      const token = await loginService(username, password)
+      login(token)   // el AuthContext decodifica, persiste y actualiza el state
 
       // 3. Navegamos al dashboard
       navigate('/dashboard', { replace: true })
