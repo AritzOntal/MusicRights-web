@@ -24,7 +24,7 @@ const initialState: AuthState = {
 }
 
 // REDUCE COMO QUEDARÁ LA PIZARRA EN DEPENDIENDO DEL CASO (TYPE) como filtro
-function authReducer(state: AuthState, action: AuthAction): AuthState {
+ export function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
     case 'INITIALIZE':
       return action.payload
