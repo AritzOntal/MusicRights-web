@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { authReducer } from './AuthContext'
+import { authReducer } from '../contexts/AuthContext'
 
 describe('authReducer', () => {
 
