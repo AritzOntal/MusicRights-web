@@ -62,7 +62,18 @@ function DashboardPage() {
 
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-white p-3 rounded shadow border">Total: <b>{total}</b></div>
-          <div className="bg-white p-3 rounded shadow border">Registradas: <b>{registered}</b></div>
+
+          {/* Tarjeta central que cambia según el rol */}
+          {state.user?.role === 'ADMIN' && (
+            <div className="bg-white p-3 rounded shadow border">Sin registrar: <b>{total - registered}</b></div>
+          )}
+          {state.user?.role === 'MUSICIAN' && (
+            <div className="bg-white p-3 rounded shadow border">Registradas: <b>{registered}</b></div>
+          )}
+          {state.user?.role === 'USER' && (
+            <div className="bg-white p-3 rounded shadow border">Disponibles: <b>{total}</b></div>
+          )}
+
           <div className="bg-white p-3 rounded shadow border">Géneros: <b>{genres}</b></div>
         </div>
 
