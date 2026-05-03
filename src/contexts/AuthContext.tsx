@@ -14,7 +14,7 @@ interface AuthState {
 //TIPOS DE PIZARRAS 3 ACIONES POSIBLES SOLAMENTE
 type AuthAction =
   | { type: 'INITIALIZE'; payload: { user: AuthUser; token: string } | null }
-  | { type: 'LOGIN';      payload: { user: AuthUser; token: string } }
+  | { type: 'LOGIN'; payload: { user: AuthUser; token: string } }
   | { type: 'LOGOUT' }
 
 const initialState: AuthState = {
@@ -24,7 +24,7 @@ const initialState: AuthState = {
 }
 
 // REDUCE COMO QUEDARÁ LA PIZARRA EN DEPENDIENDO DEL CASO (TYPE) como filtro
- export function authReducer(state: AuthState, action: AuthAction): AuthState {
+export function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
     case 'INITIALIZE':
       return action.payload
@@ -77,7 +77,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 //PROVEE LA PIZARRA
 export function AuthProvider({ children }: { children: ReactNode }) {
-    //COMO useState PERO MÁS COMPLEJO PORQUE HACE ACCION DE LLAMAR A REDUCER PARA QUE CAMBIE
+  //COMO useState PERO MÁS COMPLEJO PORQUE HACE ACCION DE LLAMAR A REDUCER PARA QUE CAMBIE
   const [state, dispatch] = useReducer(authReducer, initialState)
 
   // Al montar la app, intentamos restaurar la sesión desde localStorage
@@ -95,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(TOKEN_STORAGE_KEY)
       dispatch({ type: 'INITIALIZE', payload: null })
     }
-// aqui le hemos dicho a react que solo ejecute esto una vez para mirar el localStorage
+    // aqui le hemos dicho a react que solo ejecute esto una vez para mirar el localStorage
   }, [])
 
   function login(token: string) {
@@ -112,12 +112,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'LOGOUT' })
   }
 
-//todo lo que este dentro de esto (childrens) podran usar el auth
+  //todo lo que este dentro de esto (childrens) podran usar el auth
   return (
-       <AuthContext.Provider value={{ state, login, logout }}>
-         {children}
-       </AuthContext.Provider>
-     )
+    <AuthContext.Provider value={{ state, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 //Para consumir el contesxto
