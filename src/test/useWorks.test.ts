@@ -7,7 +7,6 @@ import type { Work } from '../types/work'
 describe('useWorks', () => {
 
     it('devuelve las obras cuando el servicio responde bien', async () => {
-        // ARRANGE: datos de prueba y mock del servicio
         const mockWorks: Work[] = [
             {
                 id: 1,
@@ -24,7 +23,7 @@ describe('useWorks', () => {
         // renderizamos el hook de forma aislada
         const { result } = renderHook(() => useWorks())
 
-        // primero cargando antes de que se ejecute .then
+        // cargando antes de que se ejecute .then
         expect(result.current.loading).toBe(true)
 
         // cuando termina, tenemos los datos y sin error
@@ -33,6 +32,22 @@ describe('useWorks', () => {
         })
         expect(result.current.works).toEqual(mockWorks)
         expect(result.current.error).toBeNull()
+    })
+
+    it('devuelve mensaje de error cuando el servicio falla', async () => {
+        // Mock que falla
+        vi.spyOn(workServices, 'getAllWorks').mockRejectedValue(new Error('boom'))
+
+        const { result } = renderHook(() => useWorks())
+
+        // Esperamos a que el hook termine de cargar
+        await waitFor(() => {
+            expect(result.current.loading).toBe(false)
+        })
+
+        // No tiene obras y mensaje de error
+        expect(result.current.works).toEqual([])
+        expect(result.current.error).toMatch(/no se pudieron cargar las obras/i)
     })
 
 })
