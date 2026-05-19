@@ -41,7 +41,7 @@ describe('AdminPage', () => {
 
     it('cambia el rol de un usuario y llama al servicio', async () => {
         const mockUsers: User[] = [
-            { id: 1, username: 'alice', role: 'ROLE_USER' },
+            { id: 1, username: 'Aritz', role: 'ROLE_USER' },
         ]
         vi.spyOn(userService, 'getAllUsers').mockResolvedValue(mockUsers)
         const updateSpy = vi.spyOn(userService, 'updateUserRole').mockResolvedValue({
@@ -52,7 +52,7 @@ describe('AdminPage', () => {
         renderPage()
 
         // Esperamos a que aparezca el select del usuario
-        const select = await screen.findByLabelText(/rol de alice/i)
+        const select = await screen.findByLabelText(/rol de Aritz/i)
 
         fireEvent.change(select, { target: { value: 'ROLE_MUSICIAN' } })
 
@@ -61,13 +61,13 @@ describe('AdminPage', () => {
         })
         // Y aparece el feedback de éxito
         await waitFor(() => {
-            expect(screen.getByText(/rol de "alice" actualizado a ROLE_MUSICIAN/i)).toBeTruthy()
+            expect(screen.getByText(/rol de "Aritz" actualizado a ROLE_MUSICIAN/i)).toBeTruthy()
         })
     })
 
     it('revierte el rol si el back devuelve error', async () => {
         const mockUsers: User[] = [
-            { id: 1, username: 'alice', role: 'ROLE_USER' },
+            { id: 1, username: 'Aritz', role: 'ROLE_USER' },
         ]
         vi.spyOn(userService, 'getAllUsers').mockResolvedValue(mockUsers)
         vi.spyOn(userService, 'updateUserRole').mockRejectedValue({
@@ -77,7 +77,7 @@ describe('AdminPage', () => {
 
         renderPage()
 
-        const select = await screen.findByLabelText(/rol de alice/i) as HTMLSelectElement
+        const select = await screen.findByLabelText(/rol de Aritz/i) as HTMLSelectElement
 
         fireEvent.change(select, { target: { value: 'ROLE_ADMIN' } })
 
