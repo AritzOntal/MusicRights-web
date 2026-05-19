@@ -16,6 +16,7 @@ function DashboardPage() {
   const [asc, setAsc] = useState(true)
 
   const isUser = state.user?.role === 'USER'
+  const isMusician = state.user?.role === 'MUSICIAN'
 
   // Filtro por búsqueda
   const q = search.trim().toLowerCase()
@@ -57,9 +58,19 @@ function DashboardPage() {
           <h1 className="text-2xl font-bold">
             Dashboard — {state.user?.username} ({state.user?.role})
           </h1>
-          <button onClick={logout} className="bg-red-600 text-white px-3 py-1 rounded">
-            Cerrar sesión
-          </button>
+          <div className="flex gap-2">
+            {isMusician && (
+              <button
+                onClick={() => navigate('/works/new')}
+                className="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800"
+              >
+                + Nueva obra
+              </button>
+            )}
+            <button onClick={logout} className="bg-red-600 text-white px-3 py-1 rounded">
+              Cerrar sesión
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-4">

@@ -4,6 +4,7 @@ import DashboardPage from './pages/DashboardPage'
 import RegisterPage from './pages/RegisterPage'
 import AdminPage from './pages/AdminPage'
 import WorkDetailPage from './pages/WorkDetailPage'
+import WorkCreatePage from './pages/WorkCreatePage'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -18,6 +19,15 @@ function App() {
         element={
           <ProtectedRoute>
             <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/works/new"
+        element={
+          <ProtectedRoute allowedRoles={['MUSICIAN']}>
+            <WorkCreatePage />
           </ProtectedRoute>
         }
       />
