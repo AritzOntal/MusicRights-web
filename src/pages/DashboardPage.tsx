@@ -17,6 +17,7 @@ function DashboardPage() {
 
   const isUser = state.user?.role === 'USER'
   const isMusician = state.user?.role === 'MUSICIAN'
+  const isAdmin = state.user?.role === 'ADMIN'
 
   // Filtro por búsqueda
   const q = search.trim().toLowerCase()
@@ -73,6 +74,14 @@ function DashboardPage() {
                 className="bg-emerald-700 text-white px-3 py-1 rounded hover:bg-emerald-800"
               >
                 Hazte músico
+              </button>
+            )}
+            {isAdmin && (
+              <button
+                onClick={() => navigate('/admin')}
+                className="bg-purple-700 text-white px-3 py-1 rounded hover:bg-purple-800"
+              >
+                Panel de admin
               </button>
             )}
             <button onClick={logout} className="bg-red-600 text-white px-3 py-1 rounded">
