@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
+import { BrowserRouter } from 'react-router-dom'
 import DashboardPage from '../pages/DashboardPage'
 import { AuthProvider } from '../contexts/AuthContext'
 import * as useWorksHook from '../hooks/useWorks'
@@ -19,10 +20,13 @@ describe('DashboardPage', () => {
             error: null,
         })
 
+        // El Dashboard usa useNavigate, así que tiene que ir dentro de un Router
         render(
-            <AuthProvider>
-                <DashboardPage />
-            </AuthProvider>
+            <BrowserRouter>
+                <AuthProvider>
+                    <DashboardPage />
+                </AuthProvider>
+            </BrowserRouter>
         )
 
         // Escribimos en el buscador
