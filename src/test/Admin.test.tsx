@@ -34,9 +34,9 @@ describe('AdminPage', () => {
         renderPage()
 
         await waitFor(() => {
-            expect(screen.getByText('alice')).toBeTruthy()
+            expect(screen.getByText('Aritz')).toBeTruthy()
         })
-        expect(screen.getByText('bob')).toBeTruthy()
+        expect(screen.getByText('Juan')).toBeTruthy()
     })
 
     it('cambia el rol de un usuario y llama al servicio', async () => {
