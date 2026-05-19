@@ -67,6 +67,14 @@ function DashboardPage() {
                 + Nueva obra
               </button>
             )}
+            {isUser && (
+              <button
+                onClick={() => navigate('/musicians/me')}
+                className="bg-emerald-700 text-white px-3 py-1 rounded hover:bg-emerald-800"
+              >
+                Hazte músico
+              </button>
+            )}
             <button onClick={logout} className="bg-red-600 text-white px-3 py-1 rounded">
               Cerrar sesión
             </button>
