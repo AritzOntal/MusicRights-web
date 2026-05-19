@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage'
 import AdminPage from './pages/AdminPage'
 import WorkDetailPage from './pages/WorkDetailPage'
 import WorkCreatePage from './pages/WorkCreatePage'
+import MyMusicianPage from './pages/MyMusicianPage'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -28,6 +29,15 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['MUSICIAN']}>
             <WorkCreatePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/musicians/me"
+        element={
+          <ProtectedRoute allowedRoles={['USER']}>
+            <MyMusicianPage />
           </ProtectedRoute>
         }
       />
