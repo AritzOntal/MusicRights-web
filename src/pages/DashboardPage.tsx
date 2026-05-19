@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useWorks } from '../hooks/useWorks'
 
@@ -6,6 +7,7 @@ type SortColumn = 'title' | 'genre' | 'duration' | 'composedAt'
 
 
 function DashboardPage() {
+  const navigate = useNavigate()
   const { state, logout } = useAuth()
   const { works, loading, error } = useWorks()
 
@@ -118,7 +120,11 @@ function DashboardPage() {
             </thead>
             <tbody>
               {sorted.map((w) => (
-                <tr key={w.id} className="border-t">
+                <tr
+                  key={w.id}
+                  onClick={() => navigate(`/works/${w.id}`)}
+                  className="border-t cursor-pointer hover:bg-slate-50"
+                >
                   <td className="p-2">{w.title}</td>
                   <td className="p-2">{w.genre}</td>
                   <td className="p-2">{w.duration ?? '—'}</td>
