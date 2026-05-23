@@ -63,15 +63,12 @@ function ConcertsPage() {
                   <th className="p-3 text-left font-medium">Estado</th>
                   <th className="p-3 text-left font-medium">Realizado</th>
                   <th className="p-3 text-left font-medium">Precio</th>
+                  <th className="p-3 text-right font-medium">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {concerts.map((c) => (
-                  <tr
-                    key={c.id}
-                    onClick={() => navigate(`/concerts/${c.id}`)}
-                    className="border-t border-line cursor-pointer hover:bg-paper"
-                  >
+                  <tr key={c.id} className="border-t border-line">
                     <td className="p-3 font-medium">{c.showTitle}</td>
                     <td className="p-3 text-muted">{c.city}</td>
                     <td className="p-3 text-muted">{c.province}</td>
@@ -83,6 +80,14 @@ function ConcertsPage() {
                       </span>
                     </td>
                     <td className="p-3 text-muted">{c.ticketPrice} €</td>
+                    <td className="p-3 text-right">
+                      <button
+                        onClick={() => navigate(`/concerts/${c.id}`)}
+                        className="btn-ghost btn-sm"
+                      >
+                        Reclamar
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -7,6 +7,7 @@ import type { NewMusician } from '../types/musician'
 import AppLayout from '../components/AppLayout'
 
 const DNI_REGEX = /^\d{8}[A-Za-z]$/
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function MyMusicianPage() {
   const navigate = useNavigate()
@@ -19,6 +20,13 @@ function MyMusicianPage() {
   const [affiliated, setAffiliated] = useState(false)
   const [performanceFee, setPerformanceFee] = useState('') // string para validar
   const [affiliatedNumber, setAffiliatedNumber] = useState('')
+
+  // Datos de contacto del organizador (para el formulario de SGAE)
+  const [address, setAddress] = useState('')
+  const [postalCode, setPostalCode] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [contactPerson, setContactPerson] = useState('')
 
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -56,6 +64,11 @@ function MyMusicianPage() {
       affiliatedNumberValue = n
     }
 
+    if (email.trim() !== '' && !EMAIL_REGEX.test(email.trim())) {
+      setError('El email no tiene un formato válido')
+      return
+    }
+
     setError(null)
     setLoading(true)
 
@@ -68,6 +81,13 @@ function MyMusicianPage() {
       performanceFee: feeNumber,
       affiliatedNumber: affiliatedNumberValue,
     }
+
+    // Solo añadimos los datos de contacto del organizador si se han rellenado
+    if (address.trim()) payload.address = address.trim()
+    if (postalCode.trim()) payload.postalCode = postalCode.trim()
+    if (phone.trim()) payload.phone = phone.trim()
+    if (email.trim()) payload.email = email.trim()
+    if (contactPerson.trim()) payload.contactPerson = contactPerson.trim()
 
     try {
       await becomeMusician(payload)
@@ -195,6 +215,74 @@ function MyMusicianPage() {
               disabled={loading}
               className="input"
             />
+          </div>
+
+          <div className="space-y-4 border-t border-line pt-5">
+            <h2 className="font-serif text-lg">Datos de contacto (organizador SGAE)</h2>
+            <p className="text-xs text-muted -mt-2">
+              Se usarán para rellenar el bloque «Organizador» del documento de SGAE. Puedes dejarlos en blanco y completarlos más adelante.
+            </p>
+
+            <div>
+              <label htmlFor="address" className="label">Domicilio</label>
+              <input
+                id="address"
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                disabled={loading}
+                className="input"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="postalCode" className="label">Código postal</label>
+                <input
+                  id="postalCode"
+                  type="text"
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
+                  disabled={loading}
+                  className="input"
+                />
+              </div>
+              <div>
+                <label htmlFor="phone" className="label">Teléfono</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  disabled={loading}
+                  className="input"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="email" className="label">Email</label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                className="input"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="contactPerson" className="label">Persona a contactar</label>
+              <input
+                id="contactPerson"
+                type="text"
+                value={contactPerson}
+                onChange={(e) => setContactPerson(e.target.value)}
+                disabled={loading}
+                className="input"
+              />
+            </div>
           </div>
 
           {error && <p className="text-sm text-red-600">{error}</p>}

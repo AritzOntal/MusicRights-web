@@ -221,7 +221,7 @@ function ConcertDetailPage() {
             type="button"
             disabled
             title="Disponible en el siguiente paso"
-            className="btn-ghost"
+            className="btn-primary bg-green-600 hover:bg-green-700"
           >
             Generar PDF SGAE
           </button>

@@ -8,6 +8,12 @@ export interface Musician {
     dni: string
     performanceFee: number | null
     affiliatedNumber: number
+    // Datos de contacto del organizador (para el formulario de SGAE)
+    address?: string | null
+    postalCode?: string | null
+    phone?: string | null
+    email?: string | null
+    contactPerson?: string | null
 }
 
 // Payload para POST /api/v1/musicians/me (el back genera el id)
