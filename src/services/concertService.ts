@@ -27,3 +27,33 @@ export async function createConcert(concert: NewConcert): Promise<Concert> {
     const response = await apiClient.post<Concert>('/v1/concerts', concert)
     return response.data
 }
+
+// Payload de edición. Incluye TODOS los campos que mapea ConcertService.edit
+// en el back (si se omite alguno, el back lo pondría a null). El músico NO se
+// envía: el back conserva el dueño actual.
+export interface UpdateConcert {
+    showTitle: string
+    city: string
+    province: string
+    date: string
+    status: string | null
+    performed: boolean
+    ticketPrice: number
+    longitude: number | null
+    latitude: number | null
+    time: string | null
+    venueName: string | null
+    venueAddress: string | null
+    capacity: number | null
+    venueOwner: string | null
+    performers: string | null
+    ticketClass: string | null
+    totalTickets: number | null
+    tariffType: string | null
+    works: { id: number }[]
+}
+
+export async function updateConcert(id: number, concert: UpdateConcert): Promise<Concert> {
+    const response = await apiClient.put<Concert>(`/v1/concerts/${id}`, concert)
+    return response.data
+}

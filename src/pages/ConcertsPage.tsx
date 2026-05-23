@@ -1,14 +1,18 @@
 import { useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout'
-
-const metrics: Array<[string, string]> = [
-  ['Conciertos registrados', '0'],
-  ['Próximos a caducar', '0'],
-  ['PDFs generados', '0'],
-]
+import { useConcerts } from '../hooks/useConcerts'
 
 function ConcertsPage() {
   const navigate = useNavigate()
+  const { concerts, loading, error } = useConcerts()
+
+  const total = concerts.length
+
+  const metrics: Array<[string, string]> = [
+    ['Conciertos registrados', String(total)],
+    ['Próximos a caducar', '0'],
+    ['PDFs generados', '0'],
+  ]
 
   return (
     <AppLayout>
@@ -34,13 +38,57 @@ function ConcertsPage() {
           ))}
         </div>
 
-        <div className="card p-12 text-center">
-          <p className="font-serif text-lg">Aún no hay conciertos</p>
-          <p className="text-sm text-muted mt-2 max-w-md mx-auto">
-            Esta sección se completará en el siguiente paso: alta de conciertos con todos los
-            datos que pide el formulario de SGAE, selección del setlist y generación del PDF.
-          </p>
-        </div>
+        {loading && <p className="text-muted">Cargando conciertos…</p>}
+        {error && <p className="text-red-600">{error}</p>}
+
+        {!loading && !error && total === 0 && (
+          <div className="card p-12 text-center">
+            <p className="font-serif text-lg">Aún no hay conciertos</p>
+            <p className="text-sm text-muted mt-2 max-w-md mx-auto">
+              Crea tu primer concierto con el botón «+ Nuevo concierto» para empezar a
+              gestionar tus derechos de SGAE.
+            </p>
+          </div>
+        )}
+
+        {!loading && !error && total > 0 && (
+          <div className="card overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="border-b border-line text-muted">
+                <tr>
+                  <th className="p-3 text-left font-medium">Título</th>
+                  <th className="p-3 text-left font-medium">Ciudad</th>
+                  <th className="p-3 text-left font-medium">Provincia</th>
+                  <th className="p-3 text-left font-medium">Fecha</th>
+                  <th className="p-3 text-left font-medium">Estado</th>
+                  <th className="p-3 text-left font-medium">Realizado</th>
+                  <th className="p-3 text-left font-medium">Precio</th>
+                </tr>
+              </thead>
+              <tbody>
+                {concerts.map((c) => (
+                  <tr
+                    key={c.id}
+                    onClick={() => navigate(`/concerts/${c.id}`)}
+                    className="border-t border-line cursor-pointer hover:bg-paper"
+                  >
+                    <td className="p-3 font-medium">{c.showTitle}</td>
+                    <td className="p-3 text-muted">{c.city}</td>
+                    <td className="p-3 text-muted">{c.province}</td>
+                    <td className="p-3 text-muted">{c.date}</td>
+                    <td className="p-3 text-muted">{c.status ?? '—'}</td>
+                    <td className="p-3">
+                      <span className={c.performed ? 'badge-neutral' : 'badge-warn'}>
+                        {c.performed ? 'Sí' : 'No'}
+                      </span>
+                    </td>
+                    <td className="p-3 text-muted">{c.ticketPrice} €</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </AppLayout>
   )

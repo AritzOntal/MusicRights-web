@@ -9,6 +9,7 @@ import MyMusicianPage from './pages/MyMusicianPage'
 import MusicianDetailPage from './pages/MusicianDetailPage'
 import ConcertsPage from './pages/ConcertsPage'
 import ConcertCreatePage from './pages/ConcertCreatePage'
+import ConcertDetailPage from './pages/ConcertDetailPage'
 import AdminWorksPage from './pages/AdminWorksPage'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -51,6 +52,15 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['MUSICIAN']}>
             <ConcertCreatePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/concerts/:id"
+        element={
+          <ProtectedRoute allowedRoles={['MUSICIAN']}>
+            <ConcertDetailPage />
           </ProtectedRoute>
         }
       />
