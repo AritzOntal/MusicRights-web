@@ -1,3 +1,5 @@
+import type { Musician } from './musician'
+
 export interface Work {
     id: number
     title: string
@@ -6,4 +8,5 @@ export interface Work {
     duration: number | null
     composedAt: string | null
     registred: boolean
+    musicians?: Musician[]
 }

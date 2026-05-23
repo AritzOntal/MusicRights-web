@@ -7,3 +7,8 @@ export async function becomeMusician(input: NewMusician): Promise<Musician> {
     const response = await apiClient.post<Musician>('/v1/musicians/me', input)
     return response.data
 }
+
+export async function getMusicianById(id: number): Promise<Musician> {
+    const response = await apiClient.get<Musician>(`/v1/musicians/${id}`)
+    return response.data
+}

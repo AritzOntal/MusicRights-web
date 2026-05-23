@@ -18,3 +18,7 @@ export async function createWork(work: NewWork): Promise<Work> {
     const response = await apiClient.post<Work>('/v1/works', work)
     return response.data
 }
+
+export async function deleteWork(id: number): Promise<void> {
+    await apiClient.delete(`/v1/works/${id}`)
+}

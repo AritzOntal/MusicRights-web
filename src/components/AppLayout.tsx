@@ -23,10 +23,17 @@ export default function AppLayout({ children, maxWidth = 'max-w-5xl' }: AppLayou
   const { pathname } = useLocation()
   const role = state.user?.role
 
-  const items: NavItem[] = [{ label: 'Obras', to: '/dashboard' }]
-  if (role === 'MUSICIAN') items.push({ label: 'Conciertos', to: '/concerts' })
-  if (role === 'USER') items.push({ label: 'Hazte músico', to: '/musicians/me' })
-  if (role === 'ADMIN') items.push({ label: 'Admin', to: '/admin' })
+  let items: NavItem[]
+  if (role === 'ADMIN') {
+    items = [
+      { label: 'Usuarios', to: '/admin' },
+      { label: 'Obras', to: '/admin/works' },
+    ]
+  } else {
+    items = [{ label: 'Obras', to: '/dashboard' }]
+    if (role === 'MUSICIAN') items.push({ label: 'Conciertos', to: '/concerts' })
+    if (role === 'USER') items.push({ label: 'Hazte músico', to: '/musicians/me' })
+  }
 
   function handleLogout() {
     logout()
@@ -43,7 +50,11 @@ export default function AppLayout({ children, maxWidth = 'max-w-5xl' }: AppLayou
 
           <nav className="flex items-center gap-1">
             {items.map((it) => {
-              const active = pathname === it.to || pathname.startsWith(it.to + '/')
+              // /admin es prefijo de /admin/works, así que para esa pestaña exigimos match exacto
+              const active =
+                it.to === '/admin'
+                  ? pathname === '/admin'
+                  : pathname === it.to || pathname.startsWith(it.to + '/')
               return (
                 <Link
                   key={it.to}

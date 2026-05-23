@@ -6,7 +6,10 @@ import AdminPage from './pages/AdminPage'
 import WorkDetailPage from './pages/WorkDetailPage'
 import WorkCreatePage from './pages/WorkCreatePage'
 import MyMusicianPage from './pages/MyMusicianPage'
+import MusicianDetailPage from './pages/MusicianDetailPage'
 import ConcertsPage from './pages/ConcertsPage'
+import ConcertCreatePage from './pages/ConcertCreatePage'
+import AdminWorksPage from './pages/AdminWorksPage'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -44,10 +47,28 @@ function App() {
       />
 
       <Route
+        path="/concerts/new"
+        element={
+          <ProtectedRoute allowedRoles={['MUSICIAN']}>
+            <ConcertCreatePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/musicians/me"
         element={
           <ProtectedRoute allowedRoles={['USER']}>
             <MyMusicianPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/musicians/:id"
+        element={
+          <ProtectedRoute>
+            <MusicianDetailPage />
           </ProtectedRoute>
         }
       />
@@ -66,6 +87,15 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['ADMIN']}>
             <AdminPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/works"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <AdminWorksPage />
           </ProtectedRoute>
         }
       />

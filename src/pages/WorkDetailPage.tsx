@@ -1,18 +1,53 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
-import { getWorkById } from '../services/workServices'
+import { getWorkById, deleteWork } from '../services/workServices'
+import { useAuth } from '../contexts/AuthContext'
 import type { Work } from '../types/work'
 import AppLayout from '../components/AppLayout'
 
 function WorkDetailPage() {
   const navigate = useNavigate()
+  const { state } = useAuth()
   // Cogemos el :id de la URL (siempre llega como string)
   const { id } = useParams<{ id: string }>()
 
   const [work, setWork] = useState<Work | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [actionError, setActionError] = useState<string | null>(null)
+
+  // Solo los músicos pueden eliminar obras de su propio catálogo
+  const isMusician = state.user?.role === 'MUSICIAN'
+
+  async function handleDelete() {
+    if (!work) return
+    const ok = window.confirm(
+      `¿Eliminar "${work.title}" de tu catálogo? Esta acción no se puede deshacer.`
+    )
+    if (!ok) return
+
+    setActionError(null)
+    setDeleting(true)
+    try {
+      await deleteWork(work.id)
+      navigate('/dashboard', { replace: true })
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 404) {
+          setActionError('La obra ya no existe o no pertenece a tu catálogo.')
+        } else if (err.response?.status === 401 || err.response?.status === 403) {
+          setActionError('No tienes permisos para eliminar esta obra.')
+        } else {
+          setActionError('No se pudo eliminar la obra.')
+        }
+      } else {
+        setActionError('Error inesperado')
+      }
+      setDeleting(false)
+    }
+  }
 
   useEffect(() => {
     // Si el id de la URL no es un número válido, no llamamos al back
@@ -75,6 +110,19 @@ function WorkDetailPage() {
                 </div>
               ))}
             </dl>
+
+            {isMusician && (
+              <div className="mt-6 pt-5 border-t border-line">
+                {actionError && <p className="text-sm text-red-600 mb-3">{actionError}</p>}
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="inline-flex items-center justify-center h-10 px-4 rounded-xl text-sm font-medium border border-red-200 text-accent transition-colors hover:bg-accent-soft disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {deleting ? 'Eliminando…' : 'Eliminar de mi catálogo'}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

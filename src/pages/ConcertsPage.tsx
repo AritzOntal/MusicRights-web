@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout'
 
 const metrics: Array<[string, string]> = [
@@ -7,6 +8,8 @@ const metrics: Array<[string, string]> = [
 ]
 
 function ConcertsPage() {
+  const navigate = useNavigate()
+
   return (
     <AppLayout>
       <div className="space-y-8">
@@ -17,7 +20,7 @@ function ConcertsPage() {
               Registra tus conciertos y genera el documento oficial de SGAE en un clic.
             </p>
           </div>
-          <button className="btn-primary" disabled title="Disponible en el siguiente paso">
+          <button onClick={() => navigate('/concerts/new')} className="btn-primary">
             + Nuevo concierto
           </button>
         </div>

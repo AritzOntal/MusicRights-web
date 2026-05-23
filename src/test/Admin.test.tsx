@@ -24,7 +24,7 @@ describe('AdminPage', () => {
         localStorage.clear()
     })
 
-    it('muestra el listado de usuarios cuando el servicio responde bien', async () => {
+    it('muestra los usuarios que coinciden con la búsqueda', async () => {
         const mockUsers: User[] = [
             { id: 1, username: 'Aritz', role: 'ROLE_USER' },
             { id: 2, username: 'Juan',   role: 'ROLE_MUSICIAN' },
@@ -32,6 +32,9 @@ describe('AdminPage', () => {
         vi.spyOn(userService, 'getAllUsers').mockResolvedValue(mockUsers)
 
         renderPage()
+
+        // La lista no aparece de golpe; hay que buscar para ver coincidencias
+        fireEvent.change(await screen.findByPlaceholderText(/buscar/i), { target: { value: 'a' } })
 
         await waitFor(() => {
             expect(screen.getByText('Aritz')).toBeTruthy()
@@ -51,7 +54,8 @@ describe('AdminPage', () => {
 
         renderPage()
 
-        // Esperamos a que aparezca el select del usuario
+        // Buscamos al usuario y luego cambiamos su rol desde el resultado
+        fireEvent.change(await screen.findByPlaceholderText(/buscar/i), { target: { value: 'Aritz' } })
         const select = await screen.findByLabelText(/rol de Aritz/i)
 
         fireEvent.change(select, { target: { value: 'ROLE_MUSICIAN' } })
@@ -77,6 +81,7 @@ describe('AdminPage', () => {
 
         renderPage()
 
+        fireEvent.change(await screen.findByPlaceholderText(/buscar/i), { target: { value: 'Aritz' } })
         const select = await screen.findByLabelText(/rol de Aritz/i) as HTMLSelectElement
 
         fireEvent.change(select, { target: { value: 'ROLE_ADMIN' } })
