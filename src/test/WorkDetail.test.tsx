@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import WorkDetailPage from '../pages/WorkDetailPage'
+import { AuthProvider } from '../contexts/AuthContext'
 import * as workServices from '../services/workServices'
 import type { Work } from '../types/work'
 
@@ -10,9 +11,11 @@ import type { Work } from '../types/work'
 function renderAt(url: string) {
     return render(
         <MemoryRouter initialEntries={[url]}>
-            <Routes>
-                <Route path="/works/:id" element={<WorkDetailPage />} />
-            </Routes>
+            <AuthProvider>
+                <Routes>
+                    <Route path="/works/:id" element={<WorkDetailPage />} />
+                </Routes>
+            </AuthProvider>
         </MemoryRouter>
     )
 }

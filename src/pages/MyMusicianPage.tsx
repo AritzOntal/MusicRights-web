@@ -4,6 +4,7 @@ import axios from 'axios'
 import { becomeMusician } from '../services/musicianService'
 import { useAuth } from '../contexts/AuthContext'
 import type { NewMusician } from '../types/musician'
+import AppLayout from '../components/AppLayout'
 
 const DNI_REGEX = /^\d{8}[A-Za-z]$/
 
@@ -98,116 +99,117 @@ function MyMusicianPage() {
   }
 
   return (
-    <main className="min-h-screen p-8 bg-slate-50">
-      <div className="max-w-xl mx-auto space-y-4">
+    <AppLayout maxWidth="max-w-xl">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl">Hazte músico</h1>
+          <p className="text-sm text-muted mt-1">
+            Completa tu ficha para registrar y gestionar tus obras.
+          </p>
+        </div>
 
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="text-sm text-blue-700 underline"
-        >
-          ← Volver al dashboard
-        </button>
-
-        <h1 className="text-2xl font-bold">Hazte músico</h1>
-        <p className="text-sm text-slate-600">
-          Completa tu ficha para registrar y gestionar tus obras.
-        </p>
-
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow border space-y-4">
-
-          <label className="block">
-            <span className="text-sm font-medium">Nombre</span>
+        <form onSubmit={handleSubmit} className="card p-6 space-y-5">
+          <div>
+            <label htmlFor="firstName" className="label">Nombre</label>
             <input
+              id="firstName"
               type="text"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               disabled={loading}
-              className="mt-1 w-full border rounded px-3 py-2"
+              className="input"
             />
-          </label>
+          </div>
 
-          <label className="block">
-            <span className="text-sm font-medium">Apellido *</span>
+          <div>
+            <label htmlFor="lastName" className="label">Apellido *</label>
             <input
+              id="lastName"
               type="text"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               disabled={loading}
-              className="mt-1 w-full border rounded px-3 py-2"
+              className="input"
             />
-          </label>
+          </div>
 
-          <label className="block">
-            <span className="text-sm font-medium">DNI *</span>
+          <div>
+            <label htmlFor="dni" className="label">DNI *</label>
             <input
+              id="dni"
               type="text"
               value={dni}
               onChange={(e) => setDni(e.target.value.toUpperCase())}
               disabled={loading}
               placeholder="12345678A"
-              className="mt-1 w-full border rounded px-3 py-2"
+              className="input"
             />
-          </label>
+          </div>
 
-          <label className="block">
-            <span className="text-sm font-medium">Fecha de nacimiento</span>
+          <div>
+            <label htmlFor="birthDate" className="label">Fecha de nacimiento</label>
             <input
+              id="birthDate"
               type="date"
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
               disabled={loading}
-              className="mt-1 w-full border rounded px-3 py-2"
+              className="input"
             />
-          </label>
+          </div>
 
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 text-sm font-medium text-ink">
             <input
               type="checkbox"
               checked={affiliated}
               onChange={(e) => setAffiliated(e.target.checked)}
               disabled={loading}
+              className="h-4 w-4 accent-ink"
             />
-            <span className="text-sm font-medium">Afiliado</span>
+            Afiliado a SGAE
           </label>
 
-          <label className="block">
-            <span className="text-sm font-medium">Número de afiliación</span>
+          <div>
+            <label htmlFor="affiliatedNumber" className="label">Número de afiliación</label>
             <input
+              id="affiliatedNumber"
               type="number"
               min="0"
               step="1"
               value={affiliatedNumber}
               onChange={(e) => setAffiliatedNumber(e.target.value)}
               disabled={loading}
-              className="mt-1 w-full border rounded px-3 py-2"
+              className="input"
             />
-          </label>
+          </div>
 
-          <label className="block">
-            <span className="text-sm font-medium">Caché por actuación (€)</span>
+          <div>
+            <label htmlFor="performanceFee" className="label">Caché por actuación (€)</label>
             <input
+              id="performanceFee"
               type="number"
               step="0.01"
               min="0"
               value={performanceFee}
               onChange={(e) => setPerformanceFee(e.target.value)}
               disabled={loading}
-              className="mt-1 w-full border rounded px-3 py-2"
+              className="input"
             />
-          </label>
+          </div>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-700 text-white font-medium py-2 rounded hover:bg-blue-800 disabled:opacity-50"
-          >
-            {loading ? 'Registrando...' : 'Hazme músico'}
-          </button>
+          <div className="flex gap-3">
+            <button type="submit" disabled={loading} className="btn-primary">
+              {loading ? 'Registrando…' : 'Hazme músico'}
+            </button>
+            <button type="button" onClick={() => navigate('/dashboard')} className="btn-ghost">
+              Cancelar
+            </button>
+          </div>
         </form>
       </div>
-    </main>
+    </AppLayout>
   )
 }
 

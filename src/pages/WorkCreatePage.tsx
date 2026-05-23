@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { createWork } from '../services/workServices'
 import type { NewWork } from '../services/workServices'
+import AppLayout from '../components/AppLayout'
 
 // Regex igual a la del back para el campo ISRC
 const ISRC_REGEX = /^[A-Z]{2}[A-Z0-9]{3}\d{2}\d{5}$/
@@ -91,100 +92,98 @@ function WorkCreatePage() {
   }
 
   return (
-    <main className="min-h-screen p-8 bg-slate-50">
-      <div className="max-w-xl mx-auto space-y-4">
+    <AppLayout maxWidth="max-w-xl">
+      <div className="space-y-6">
+        <h1 className="text-3xl">Nueva obra</h1>
 
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="text-sm text-blue-700 underline"
-        >
-          ← Volver al dashboard
-        </button>
-
-        <h1 className="text-2xl font-bold">Nueva obra</h1>
-
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow border space-y-4">
-
-          <label className="block">
-            <span className="text-sm font-medium">Título</span>
+        <form onSubmit={handleSubmit} className="card p-6 space-y-5">
+          <div>
+            <label htmlFor="title" className="label">Título</label>
             <input
+              id="title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={loading}
-              className="mt-1 w-full border rounded px-3 py-2"
+              className="input"
             />
-          </label>
+          </div>
 
-          <label className="block">
-            <span className="text-sm font-medium">ISRC</span>
+          <div>
+            <label htmlFor="isrc" className="label">ISRC</label>
             <input
+              id="isrc"
               type="text"
               value={isrc}
               onChange={(e) => setIsrc(e.target.value.toUpperCase())}
               disabled={loading}
               placeholder="ESABC2300123"
-              className="mt-1 w-full border rounded px-3 py-2"
+              className="input"
             />
-          </label>
+          </div>
 
-          <label className="block">
-            <span className="text-sm font-medium">Género</span>
+          <div>
+            <label htmlFor="genre" className="label">Género</label>
             <input
+              id="genre"
               type="text"
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
               disabled={loading}
-              className="mt-1 w-full border rounded px-3 py-2"
+              className="input"
             />
-          </label>
+          </div>
 
-          <label className="block">
-            <span className="text-sm font-medium">Duración (segundos)</span>
+          <div>
+            <label htmlFor="duration" className="label">Duración (segundos)</label>
             <input
+              id="duration"
               type="number"
               step="0.01"
               min="0"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
               disabled={loading}
-              className="mt-1 w-full border rounded px-3 py-2"
+              className="input"
             />
-          </label>
+          </div>
 
-          <label className="block">
-            <span className="text-sm font-medium">Fecha de composición</span>
+          <div>
+            <label htmlFor="composedAt" className="label">Fecha de composición</label>
             <input
+              id="composedAt"
               type="date"
               value={composedAt}
               onChange={(e) => setComposedAt(e.target.value)}
               disabled={loading}
-              className="mt-1 w-full border rounded px-3 py-2"
+              className="input"
             />
-          </label>
+          </div>
 
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 text-sm font-medium text-ink">
             <input
               type="checkbox"
               checked={registred}
               onChange={(e) => setRegistred(e.target.checked)}
               disabled={loading}
+              className="h-4 w-4 accent-ink"
             />
-            <span className="text-sm font-medium">Registrada</span>
+            Registrada
           </label>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-700 text-white font-medium py-2 rounded hover:bg-blue-800 disabled:opacity-50"
-          >
-            {loading ? 'Creando...' : 'Crear obra'}
-          </button>
+          <div className="flex gap-3">
+            <button type="submit" disabled={loading} className="btn-primary">
+              {loading ? 'Creando…' : 'Crear obra'}
+            </button>
+            <button type="button" onClick={() => navigate('/dashboard')} className="btn-ghost">
+              Cancelar
+            </button>
+          </div>
         </form>
       </div>
-    </main>
+    </AppLayout>
   )
 }
 

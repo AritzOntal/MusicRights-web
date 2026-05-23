@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { getWorkById } from '../services/workServices'
 import type { Work } from '../types/work'
+import AppLayout from '../components/AppLayout'
 
 function WorkDetailPage() {
   const navigate = useNavigate()
@@ -39,49 +40,45 @@ function WorkDetailPage() {
       .finally(() => setLoading(false))
   }, [id])
 
-  return (
-    <main className="min-h-screen p-8 bg-slate-50">
-      <div className="max-w-3xl mx-auto space-y-4">
+  const rows: Array<[string, React.ReactNode]> = work
+    ? [
+        ['ID', work.id],
+        ['ISRC', work.isrc],
+        ['Género', work.genre],
+        ['Duración', work.duration ?? '—'],
+        ['Compuesta', work.composedAt ?? '—'],
+        ['Registrada', work.registred ? 'Sí' : 'No'],
+      ]
+    : []
 
+  return (
+    <AppLayout maxWidth="max-w-2xl">
+      <div className="space-y-6">
         <button
           onClick={() => navigate('/dashboard')}
-          className="text-sm text-blue-700 underline"
+          className="text-sm text-muted hover:text-ink transition-colors"
         >
-          ← Volver al dashboard
+          ← Volver a obras
         </button>
 
-        <h1 className="text-2xl font-bold">Detalle de la obra</h1>
-
-        {loading && <p>Cargando obra...</p>}
+        {loading && <p className="text-muted">Cargando obra…</p>}
         {error && <p className="text-red-600">{error}</p>}
 
         {!loading && !error && work && (
-          <div className="bg-white p-6 rounded shadow border space-y-3">
-            <h2 className="text-xl font-semibold">{work.title}</h2>
-
-            <dl className="grid grid-cols-2 gap-y-2 text-sm">
-              <dt className="font-medium text-slate-600">ID</dt>
-              <dd>{work.id}</dd>
-
-              <dt className="font-medium text-slate-600">ISRC</dt>
-              <dd>{work.isrc}</dd>
-
-              <dt className="font-medium text-slate-600">Género</dt>
-              <dd>{work.genre}</dd>
-
-              <dt className="font-medium text-slate-600">Duración</dt>
-              <dd>{work.duration ?? '—'}</dd>
-
-              <dt className="font-medium text-slate-600">Compuesta</dt>
-              <dd>{work.composedAt ?? '—'}</dd>
-
-              <dt className="font-medium text-slate-600">Registrada</dt>
-              <dd>{work.registred ? 'Sí' : 'No'}</dd>
+          <div className="card p-7">
+            <h1 className="text-2xl mb-5">{work.title}</h1>
+            <dl className="divide-y divide-line">
+              {rows.map(([label, value]) => (
+                <div key={label} className="flex justify-between py-2.5 text-sm">
+                  <dt className="text-muted">{label}</dt>
+                  <dd className="text-ink font-medium">{value}</dd>
+                </div>
+              ))}
             </dl>
           </div>
         )}
       </div>
-    </main>
+    </AppLayout>
   )
 }
 

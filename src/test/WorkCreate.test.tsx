@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import WorkCreatePage from '../pages/WorkCreatePage'
+import { AuthProvider } from '../contexts/AuthContext'
 import * as workServices from '../services/workServices'
 import type { Work } from '../types/work'
 
@@ -9,11 +10,13 @@ import type { Work } from '../types/work'
 function renderPage() {
     return render(
         <MemoryRouter initialEntries={['/works/new']}>
-            <Routes>
-                <Route path="/works/new" element={<WorkCreatePage />} />
-                {/* Ruta destino tras crear, para que navigate('/works/:id') no falle */}
-                <Route path="/works/:id" element={<div>Detalle de la obra</div>} />
-            </Routes>
+            <AuthProvider>
+                <Routes>
+                    <Route path="/works/new" element={<WorkCreatePage />} />
+                    {/* Ruta destino tras crear, para que navigate('/works/:id') no falle */}
+                    <Route path="/works/:id" element={<div>Detalle de la obra</div>} />
+                </Routes>
+            </AuthProvider>
         </MemoryRouter>
     )
 }

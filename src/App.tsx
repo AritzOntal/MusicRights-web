@@ -6,6 +6,7 @@ import AdminPage from './pages/AdminPage'
 import WorkDetailPage from './pages/WorkDetailPage'
 import WorkCreatePage from './pages/WorkCreatePage'
 import MyMusicianPage from './pages/MyMusicianPage'
+import ConcertsPage from './pages/ConcertsPage'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -29,6 +30,15 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['MUSICIAN']}>
             <WorkCreatePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/concerts"
+        element={
+          <ProtectedRoute allowedRoles={['MUSICIAN']}>
+            <ConcertsPage />
           </ProtectedRoute>
         }
       />

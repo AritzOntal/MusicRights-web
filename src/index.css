@@ -3,17 +3,62 @@
 @tailwind utilities;
 
 :root {
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
 html, body, #root {
   height: 100%;
 }
 
-body {
-  margin: 0;
-  background-color: #f8fafc; /* slate-50 */
-  color: #0f172a;            /* slate-900 */
+@layer base {
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    margin: 0;
+  }
+  h1, h2, h3, h4 {
+    @apply font-serif font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  /* Botones (clases autocontenidas) */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl text-sm font-medium
+           transition-colors bg-accent text-white hover:bg-accent-dark
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl text-sm font-medium
+           transition-colors bg-surface text-ink border border-line-strong hover:bg-paper
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-sm {
+    @apply h-8 px-3 text-[13px] rounded-lg;
+  }
+
+  /* Campos de formulario */
+  .label {
+    @apply block text-sm font-medium text-muted mb-1.5;
+  }
+  .input {
+    @apply w-full h-10 px-3 rounded-xl border border-line bg-surface text-ink text-sm
+           placeholder:text-subtle transition-colors
+           focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
+           disabled:bg-paper disabled:opacity-60;
+  }
+
+  /* Superficies */
+  .card {
+    @apply bg-surface border border-line rounded-2xl;
+  }
+
+  /* Etiquetas / estados */
+  .badge-neutral {
+    @apply inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full
+           bg-paper text-zinc-600 border border-line;
+  }
+  .badge-warn {
+    @apply inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full
+           bg-warn-soft text-warn;
+  }
 }

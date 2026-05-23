@@ -47,54 +47,56 @@ function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm p-8 bg-white rounded-xl shadow border space-y-4"
-      >
-        <h1 className="text-2xl font-bold mb-2">Iniciar sesión</h1>
+    <main className="min-h-screen flex flex-col items-center justify-center bg-paper px-4">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl text-accent">MusicRights</h1>
+          <p className="text-sm text-muted mt-2">Gestión de derechos de autor para músicos</p>
+        </div>
 
-        <label className="block">
-          <span className="text-sm font-medium">Usuario</span>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            disabled={loading}
-            className="mt-1 w-full border rounded px-3 py-2"
-            autoComplete="username"
-          />
-        </label>
+        <form onSubmit={handleSubmit} className="card p-7 space-y-5">
+          <h2 className="text-lg">Iniciar sesión</h2>
 
-        <label className="block">
-          <span className="text-sm font-medium">Contraseña</span>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={loading}
-            className="mt-1 w-full border rounded px-3 py-2"
-            autoComplete="current-password"
-          />
-        </label>
+          <div>
+            <label htmlFor="username" className="label">Usuario</label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              disabled={loading}
+              className="input"
+              autoComplete="username"
+            />
+          </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+          <div>
+            <label htmlFor="password" className="label">Contraseña</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              className="input"
+              autoComplete="current-password"
+            />
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-700 text-white font-medium py-2 rounded hover:bg-blue-800 disabled:opacity-50"
-        >
-          {loading ? 'Entrando...' : 'Entrar'}
-        </button>
+          {error && <p className="text-sm text-red-600">{error}</p>}
 
-        <p className="text-sm text-slate-600 text-center">
-          ¿No tienes cuenta?{' '}
-          <Link to="/register" className="text-blue-700 underline">
-            Regístrate
-          </Link>
-        </p>
-      </form>
+          <button type="submit" disabled={loading} className="btn-primary w-full">
+            {loading ? 'Entrando…' : 'Entrar'}
+          </button>
+
+          <p className="text-sm text-muted text-center">
+            ¿No tienes cuenta?{' '}
+            <Link to="/register" className="text-accent font-medium underline underline-offset-2">
+              Regístrate
+            </Link>
+          </p>
+        </form>
+      </div>
     </main>
   )
 }

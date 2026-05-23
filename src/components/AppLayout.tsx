@@ -1,0 +1,78 @@
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import type { ReactNode } from 'react'
+import { useAuth } from '../contexts/AuthContext'
+
+interface NavItem {
+  label: string
+  to: string
+}
+
+interface AppLayoutProps {
+  children: ReactNode
+  maxWidth?: string // clase max-w de Tailwind
+}
+
+function initials(name?: string) {
+  if (!name) return '?'
+  return name.slice(0, 2).toUpperCase()
+}
+
+export default function AppLayout({ children, maxWidth = 'max-w-5xl' }: AppLayoutProps) {
+  const { state, logout } = useAuth()
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const role = state.user?.role
+
+  const items: NavItem[] = [{ label: 'Obras', to: '/dashboard' }]
+  if (role === 'MUSICIAN') items.push({ label: 'Conciertos', to: '/concerts' })
+  if (role === 'USER') items.push({ label: 'Hazte músico', to: '/musicians/me' })
+  if (role === 'ADMIN') items.push({ label: 'Admin', to: '/admin' })
+
+  function handleLogout() {
+    logout()
+    navigate('/login', { replace: true })
+  }
+
+  return (
+    <div className="min-h-screen bg-paper">
+      <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
+        <div className={`mx-auto flex h-16 items-center justify-between px-6 ${maxWidth}`}>
+          <Link to="/dashboard" className="font-serif text-xl font-semibold tracking-tight text-accent">
+            MusicRights
+          </Link>
+
+          <nav className="flex items-center gap-1">
+            {items.map((it) => {
+              const active = pathname === it.to || pathname.startsWith(it.to + '/')
+              return (
+                <Link
+                  key={it.to}
+                  to={it.to}
+                  className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
+                    active ? 'font-medium text-accent' : 'text-muted hover:text-ink'
+                  }`}
+                >
+                  {it.label}
+                </Link>
+              )
+            })}
+
+            <span className="mx-2 h-5 w-px bg-line" />
+
+            <span
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-xs font-medium text-white"
+              title={state.user?.username}
+            >
+              {initials(state.user?.username)}
+            </span>
+            <button onClick={handleLogout} className="btn-ghost btn-sm ml-2" title="Cerrar sesión">
+              Salir
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      <main className={`mx-auto px-6 py-10 ${maxWidth}`}>{children}</main>
+    </div>
+  )
+}
