@@ -1,7 +1,6 @@
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8085/api'
-
+const API_URL = 'https://hmooc20krj.execute-api.us-east-1.amazonaws.com/dev/api'
 //Misma que AuthService para no crear bucle circular
 const TOKEN_KEY = 'musicrights.token'
 
