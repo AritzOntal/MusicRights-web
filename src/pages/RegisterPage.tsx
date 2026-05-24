@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 // Importamos el servicio para poder llamarlo
 import { register } from '../services/authService'
+import Footer from '../components/Footer'
 
 function RegisterPage() {
   const navigate = useNavigate()
@@ -10,6 +11,7 @@ function RegisterPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
 
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -28,6 +30,10 @@ function RegisterPage() {
     }
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden')
+      return
+    }
+    if (!acceptedTerms) {
+      setError('Debes aceptar los términos y condiciones para registrarte')
       return
     }
 
@@ -56,7 +62,8 @@ function RegisterPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-paper px-4">
+    <div className="flex min-h-screen flex-col bg-paper">
+      <main className="flex flex-1 flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-3xl text-accent">MusicRights</h1>
@@ -105,9 +112,30 @@ function RegisterPage() {
             />
           </div>
 
+          <label className="flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              disabled={loading}
+              className="mt-0.5 h-4 w-4 accent-ink"
+            />
+            <span className="text-muted">
+              Acepto los{' '}
+              <a href="#" onClick={(e) => e.preventDefault()} className="text-accent underline underline-offset-2">
+                términos y condiciones
+              </a>{' '}
+              y la{' '}
+              <a href="#" onClick={(e) => e.preventDefault()} className="text-accent underline underline-offset-2">
+                política de privacidad
+              </a>
+              .
+            </span>
+          </label>
+
           {error && <p className="text-sm text-red-600">{error}</p>}
 
-          <button type="submit" disabled={loading} className="btn-primary w-full">
+          <button type="submit" disabled={loading || !acceptedTerms} className="btn-primary w-full">
             {loading ? 'Creando cuenta…' : 'Registrarse'}
           </button>
 
@@ -119,7 +147,10 @@ function RegisterPage() {
           </p>
         </form>
       </div>
-    </main>
+      </main>
+
+      <Footer variant="compact" />
+    </div>
   )
 }
 

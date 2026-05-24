@@ -4,6 +4,7 @@ import axios from 'axios'
 //Para evitar conflicto cambiamos nombre de import
 import { login as loginService } from '../services/authService'
 import { useAuth } from '../contexts/AuthContext'
+import Footer from '../components/Footer'
 
 
 
@@ -47,7 +48,8 @@ function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-paper px-4">
+    <div className="flex min-h-screen flex-col bg-paper">
+      <main className="flex flex-1 flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-3xl text-accent">MusicRights</h1>
@@ -97,7 +99,10 @@ function LoginPage() {
           </p>
         </form>
       </div>
-    </main>
+      </main>
+
+      <Footer variant="compact" />
+    </div>
   )
 }
 
