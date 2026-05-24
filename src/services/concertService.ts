@@ -57,3 +57,23 @@ export async function updateConcert(id: number, concert: UpdateConcert): Promise
     const response = await apiClient.put<Concert>(`/v1/concerts/${id}`, concert)
     return response.data
 }
+
+export async function deleteConcert(id: number): Promise<void> {
+    await apiClient.delete(`/v1/concerts/${id}`)
+}
+
+// Respuesta al generar el documento SGAE (metadatos + URL de descarga prefirmada)
+export interface SgaeDocumentResponse {
+    id: number
+    filename: string
+    size: number
+    completionPercentage: number
+    complete: boolean
+    downloadUrl: string
+}
+
+// Genera el PDF de SGAE del concierto en el backend (lo sube a S3) y devuelve la URL de descarga
+export async function generateSgaeDocument(concertId: number): Promise<SgaeDocumentResponse> {
+    const response = await apiClient.post<SgaeDocumentResponse>(`/v1/concerts/${concertId}/sgae-document`)
+    return response.data
+}

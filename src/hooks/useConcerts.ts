@@ -6,6 +6,7 @@ interface UseConcertsResult {
     concerts: Concert[]
     loading: boolean
     error: string | null
+    removeConcert: (id: number) => void
 }
 
 export function useConcerts(): UseConcertsResult {
@@ -26,5 +27,9 @@ export function useConcerts(): UseConcertsResult {
             .finally(() => setLoading(false))
     }, [])
 
-    return { concerts, loading, error }
+    function removeConcert(id: number) {
+        setConcerts((prev) => prev.filter((c) => c.id !== id))
+    }
+
+    return { concerts, loading, error, removeConcert }
 }

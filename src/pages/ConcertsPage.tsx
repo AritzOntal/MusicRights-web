@@ -1,10 +1,32 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppLayout from '../components/AppLayout'
 import { useConcerts } from '../hooks/useConcerts'
+import { deleteConcert } from '../services/concertService'
 
 function ConcertsPage() {
   const navigate = useNavigate()
-  const { concerts, loading, error } = useConcerts()
+  const { concerts, loading, error, removeConcert } = useConcerts()
+
+  const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+
+  async function handleDelete(id: number) {
+    const ok = window.confirm(
+      '¿Seguro que quieres eliminar este concierto? Se borrarán también sus documentos generados y no se puede deshacer.',
+    )
+    if (!ok) return
+    setDeleteError(null)
+    setDeletingId(id)
+    try {
+      await deleteConcert(id)
+      removeConcert(id)
+    } catch {
+      setDeleteError('No se pudo eliminar el concierto')
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   const total = concerts.length
 
@@ -19,7 +41,7 @@ function ConcertsPage() {
       <div className="space-y-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl">Conciertos</h1>
+            <h1 className="text-3xl">Mis Conciertos</h1>
             <p className="text-sm text-muted mt-1">
               Registra tus conciertos y genera el documento oficial de SGAE en un clic.
             </p>
@@ -40,6 +62,7 @@ function ConcertsPage() {
 
         {loading && <p className="text-muted">Cargando conciertos…</p>}
         {error && <p className="text-red-600">{error}</p>}
+        {deleteError && <p className="text-sm text-red-600">{deleteError}</p>}
 
         {!loading && !error && total === 0 && (
           <div className="card p-12 text-center">
@@ -81,12 +104,21 @@ function ConcertsPage() {
                     </td>
                     <td className="p-3 text-muted">{c.ticketPrice} €</td>
                     <td className="p-3 text-right">
-                      <button
-                        onClick={() => navigate(`/concerts/${c.id}`)}
-                        className="btn-ghost btn-sm"
-                      >
-                        Reclamar
-                      </button>
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => navigate(`/concerts/${c.id}`)}
+                          className="btn-ghost btn-sm"
+                        >
+                          Reclamar
+                        </button>
+                        <button
+                          onClick={() => handleDelete(c.id)}
+                          disabled={deletingId === c.id}
+                          className="btn-ghost btn-sm text-red-600"
+                        >
+                          {deletingId === c.id ? 'Eliminando…' : 'Eliminar'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

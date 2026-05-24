@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { getConcertById, updateConcert } from '../services/concertService'
+import { getConcertById, updateConcert, generateSgaeDocument } from '../services/concertService'
 import type { UpdateConcert } from '../services/concertService'
 import { useWorks } from '../hooks/useWorks'
 import AppLayout from '../components/AppLayout'
@@ -57,6 +57,7 @@ function ConcertDetailPage() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveOk, setSaveOk] = useState(false)
+  const [generating, setGenerating] = useState(false)
 
   useEffect(() => {
     if (!validId) return
@@ -100,13 +101,11 @@ function ConcertDetailPage() {
     )
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-
-    if (form.showTitle.trim().length === 0) { setSaveError('El título es obligatorio'); return }
-    if (form.city.trim().length === 0) { setSaveError('La ciudad es obligatoria'); return }
-    if (form.province.trim().length === 0) { setSaveError('La provincia es obligatoria'); return }
-    if (form.date.trim().length === 0) { setSaveError('La fecha es obligatoria'); return }
+  function validate(): string | null {
+    if (form.showTitle.trim().length === 0) return 'El título es obligatorio'
+    if (form.city.trim().length === 0) return 'La ciudad es obligatoria'
+    if (form.province.trim().length === 0) return 'La provincia es obligatoria'
+    if (form.date.trim().length === 0) return 'La fecha es obligatoria'
 
     // Validación de numéricos opcionales
     const numeric: Array<[string, string, boolean]> = [
@@ -118,16 +117,15 @@ function ConcertDetailPage() {
       if (raw.trim() !== '') {
         const n = Number(raw)
         if (Number.isNaN(n) || n < 0 || (integer && !Number.isInteger(n))) {
-          setSaveError(`El campo ${label} debe ser un número${integer ? ' entero' : ''} no negativo`)
-          return
+          return `El campo ${label} debe ser un número${integer ? ' entero' : ''} no negativo`
         }
       }
     }
+    return null
+  }
 
-    setSaveError(null)
-    setSaving(true)
-
-    const payload: UpdateConcert = {
+  function buildPayload(): UpdateConcert {
+    return {
       showTitle: form.showTitle.trim(),
       city: form.city.trim(),
       province: form.province.trim(),
@@ -148,28 +146,59 @@ function ConcertDetailPage() {
       tariffType: form.tariffType || null,
       works: selectedWorkIds.map((wid) => ({ id: wid })),
     }
+  }
 
+  function axiosMessage(err: unknown, action: string): string {
+    if (axios.isAxiosError(err)) {
+      if (err.response?.status === 400) return 'Datos inválidos. Revisa los campos.'
+      if (err.response?.status === 401 || err.response?.status === 403) return `No tienes permisos para ${action}`
+      if (err.response?.status === 404) return 'El concierto ya no existe'
+      if (err.response) return `Error ${err.response.status}: no se pudo ${action}`
+      return 'No se pudo conectar con el servidor'
+    }
+    return 'Error inesperado'
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const err = validate()
+    if (err) { setSaveError(err); return }
+
+    setSaveError(null)
+    setSaving(true)
     try {
-      await updateConcert(concertId, payload)
+      await updateConcert(concertId, buildPayload())
       setSaveOk(true)
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        if (err.response?.status === 400) {
-          setSaveError('Datos inválidos. Revisa los campos.')
-        } else if (err.response?.status === 401 || err.response?.status === 403) {
-          setSaveError('No tienes permisos para editar este concierto')
-        } else if (err.response?.status === 404) {
-          setSaveError('El concierto ya no existe')
-        } else if (err.response) {
-          setSaveError(`Error ${err.response.status}: no se pudo guardar`)
-        } else {
-          setSaveError('No se pudo conectar con el servidor')
-        }
-      } else {
-        setSaveError('Error inesperado')
-      }
+    } catch (e) {
+      setSaveError(axiosMessage(e, 'guardar'))
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleGeneratePdf() {
+    const err = validate()
+    if (err) { setSaveError(err); return }
+
+    setSaveError(null)
+    setGenerating(true)
+    try {
+      // Guardamos primero para que el PDF refleje lo que hay en pantalla
+      await updateConcert(concertId, buildPayload())
+      setSaveOk(true)
+      const doc = await generateSgaeDocument(concertId)
+      // Disparamos la descarga directa (S3 ya envía Content-Disposition: attachment),
+      // sin abrir pestaña ni salir de la página.
+      const link = document.createElement('a')
+      link.href = doc.downloadUrl
+      link.download = doc.filename
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+    } catch (e) {
+      setSaveError(axiosMessage(e, 'generar el PDF'))
+    } finally {
+      setGenerating(false)
     }
   }
 
@@ -219,11 +248,11 @@ function ConcertDetailPage() {
           </div>
           <button
             type="button"
-            disabled
-            title="Disponible en el siguiente paso"
+            onClick={handleGeneratePdf}
+            disabled={saving || generating}
             className="btn-primary bg-green-600 hover:bg-green-700"
           >
-            Generar PDF SGAE
+            {generating ? 'Generando…' : 'Generar PDF SGAE'}
           </button>
         </div>
 

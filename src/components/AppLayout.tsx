@@ -32,6 +32,7 @@ export default function AppLayout({ children, maxWidth = 'max-w-5xl' }: AppLayou
   } else {
     items = [{ label: 'Obras', to: '/dashboard' }]
     if (role === 'MUSICIAN') items.push({ label: 'Conciertos', to: '/concerts' })
+    if (role === 'MUSICIAN') items.push({ label: 'Documentos', to: '/documents' })
     if (role === 'USER') items.push({ label: 'Hazte músico', to: '/musicians/me' })
   }
 
