@@ -96,7 +96,7 @@ function AdminPage() {
                 </div>
 
                 {/* Contadores clicables: despliegan la tabla correspondiente */}
-                <div className="grid grid-cols-2 gap-3 sm:max-w-md">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:max-w-md">
                     <button
                         onClick={() => toggleView('users')}
                         className={`text-left rounded-xl border p-4 transition-colors ${
@@ -164,7 +164,7 @@ function AdminPage() {
 
                 {/* 2) Sin búsqueda y con contador activo: tabla de la categoría */}
                 {!loading && !error && q === '' && view !== null && (
-                    <div className="card overflow-hidden">
+                    <div className="card overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead className="border-b border-line text-muted">
                                 <tr>

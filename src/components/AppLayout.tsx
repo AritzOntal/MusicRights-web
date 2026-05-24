@@ -45,12 +45,12 @@ export default function AppLayout({ children, maxWidth = 'max-w-5xl' }: AppLayou
   return (
     <div className="flex min-h-screen flex-col bg-paper">
       <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
-        <div className={`mx-auto flex h-16 items-center justify-between px-6 ${maxWidth}`}>
+        <div className={`mx-auto flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 py-2 sm:flex-nowrap sm:py-0 ${maxWidth}`}>
           <Link to="/dashboard" className="font-serif text-xl font-semibold tracking-tight text-accent">
             MusicRights
           </Link>
 
-          <nav className="flex items-center gap-1">
+          <nav className="flex flex-wrap items-center gap-1">
             {items.map((it) => {
               // /admin es prefijo de /admin/works, así que para esa pestaña exigimos match exacto
               const active =

@@ -239,7 +239,7 @@ function ConcertDetailPage() {
   return (
     <AppLayout maxWidth="max-w-2xl">
       <div className="space-y-6">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div>
             <h1 className="text-3xl">{form.showTitle || 'Concierto'}</h1>
             <p className="text-sm text-muted mt-1">
@@ -267,7 +267,7 @@ function ConcertDetailPage() {
                 value={form.showTitle} onChange={(e) => setField('showTitle', e.target.value)} />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="city" className="label">Ciudad</label>
                 <input id="city" type="text" className="input" disabled={saving}
@@ -280,7 +280,7 @@ function ConcertDetailPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="date" className="label">Fecha</label>
                 <input id="date" type="date" className="input" disabled={saving}
@@ -293,7 +293,7 @@ function ConcertDetailPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="status" className="label">Estado</label>
                 <select id="status" className="input" disabled={saving}
@@ -328,7 +328,7 @@ function ConcertDetailPage() {
                 value={form.venueAddress} onChange={(e) => setField('venueAddress', e.target.value)} />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="venueOwner" className="label">Titular del local</label>
                 <input id="venueOwner" type="text" className="input" disabled={saving}
@@ -352,7 +352,7 @@ function ConcertDetailPage() {
           <div className="space-y-4 border-t border-line pt-5">
             <h2 className="font-serif text-lg">Entradas</h2>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
                 <label htmlFor="ticketClass" className="label">Clase de localidad</label>
                 <input id="ticketClass" type="text" className="input" disabled={saving}
@@ -389,7 +389,7 @@ function ConcertDetailPage() {
               <p className="text-sm text-muted">No tienes obras en tu catálogo todavía.</p>
             )}
             {!worksLoading && works.length > 0 && (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {works.map((w) => (
                   <label key={w.id} className="flex items-center gap-2 text-sm text-ink">
                     <input type="checkbox" className="h-4 w-4 accent-ink" disabled={saving}

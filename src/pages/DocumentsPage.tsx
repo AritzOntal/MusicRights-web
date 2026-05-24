@@ -80,7 +80,7 @@ function DocumentsPage() {
         )}
 
         {!loading && !error && docs.length > 0 && (
-          <div className="card overflow-hidden">
+          <div className="card overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="border-b border-line text-muted">
                 <tr>

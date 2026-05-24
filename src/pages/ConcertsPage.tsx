@@ -39,7 +39,7 @@ function ConcertsPage() {
   return (
     <AppLayout>
       <div className="space-y-8">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div>
             <h1 className="text-3xl">Mis Conciertos</h1>
             <p className="text-sm text-muted mt-1">
@@ -51,7 +51,7 @@ function ConcertsPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {metrics.map(([label, value]) => (
             <div key={label} className="rounded-xl bg-paper border border-line p-4">
               <div className="text-xs text-muted">{label}</div>
@@ -75,7 +75,7 @@ function ConcertsPage() {
         )}
 
         {!loading && !error && total > 0 && (
-          <div className="card overflow-hidden">
+          <div className="card overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="border-b border-line text-muted">
                 <tr>
