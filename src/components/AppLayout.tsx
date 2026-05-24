@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import Footer from './Footer'
 
 interface NavItem {
   label: string
@@ -42,7 +43,7 @@ export default function AppLayout({ children, maxWidth = 'max-w-5xl' }: AppLayou
   }
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="flex min-h-screen flex-col bg-paper">
       <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
         <div className={`mx-auto flex h-16 items-center justify-between px-6 ${maxWidth}`}>
           <Link to="/dashboard" className="font-serif text-xl font-semibold tracking-tight text-accent">
@@ -84,7 +85,9 @@ export default function AppLayout({ children, maxWidth = 'max-w-5xl' }: AppLayou
         </div>
       </header>
 
-      <main className={`mx-auto px-6 py-10 ${maxWidth}`}>{children}</main>
+      <main className={`mx-auto w-full flex-1 px-6 py-10 ${maxWidth}`}>{children}</main>
+
+      <Footer />
     </div>
   )
 }
