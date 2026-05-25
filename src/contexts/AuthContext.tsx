@@ -112,16 +112,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function logout(message?: string) {
-    localStorage.removeItem(TOKEN_STORAGE_KEY)
+  console.log("=== INICIO LOGOUT ===")
+  console.log("Valor recibido en 'message':", message)
+  console.log("Tipo de 'message':", typeof message)
+
+  localStorage.removeItem(TOKEN_STORAGE_KEY)
+  
+  if (message && message.trim() !== '') {
+    console.log("-> SÍ ENTRA EN EL IF. Generando URL con parámetros...");
+    const searchParams = new URLSearchParams({ info: message })
+    const urlFinal = `/login?${searchParams.toString()}`
+    console.log("URL de destino:", urlFinal)
     
-    if (message) {
-      // Codificamos el texto para que sea seguro en la URL
-      const searchParams = new URLSearchParams({ info: message })
-      navigate(`/login?${searchParams.toString()}`, { replace: true })
-    } else {
-      navigate('/login', { replace: true })
-    }
-    dispatch({ type: 'LOGOUT' })
+    navigate(urlFinal, { replace: true })
+  } else {
+    console.log("-> NO ENTRA EN EL IF. Navegando a limpio...");
+    navigate('/login', { replace: true })
+  }
+
+  console.log("Disparando acción LOGOUT al reducer...");
+  dispatch({ type: 'LOGOUT' })
+  console.log("=== FIN LOGOUT ===")
 }
 
   //todo lo que este dentro de esto (childrens) podran usar el auth
