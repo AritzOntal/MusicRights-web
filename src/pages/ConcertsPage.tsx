@@ -4,6 +4,55 @@ import AppLayout from '../components/AppLayout'
 import { useConcerts } from '../hooks/useConcerts'
 import { deleteConcert } from '../services/concertService'
 
+// Función auxiliar para calcular los plazos de caducidad (5 años desde el concierto)
+function getCaducidadInfo(dateString: string) {
+  const fechaConcierto = new Date(dateString)
+  if (isNaN(fechaConcierto.getTime())) {
+    return { texto: 'Fecha inválida', clases: 'bg-gray-100 text-gray-700' }
+  }
+
+  const fechaCaducidad = new Date(fechaConcierto)
+  fechaCaducidad.setFullYear(fechaCaducidad.getFullYear() + 5)
+  
+  const hoy = new Date()
+  const diferenciaTiempo = fechaCaducidad.getTime() - hoy.getTime()
+  
+  const milisegundosEnDia = 1000 * 60 * 60 * 24
+  const diasRestantes = diferenciaTiempo / milisegundosEnDia
+  const aniosRestantes = diasRestantes / 365.25
+
+  // 1. Ya ha caducado
+  if (diasRestantes <= 0) {
+    return { 
+      texto: 'Caducado', 
+      clases: 'bg-red-100 text-red-700 border border-red-300 font-semibold' 
+    }
+  }
+  
+  // 2. Menos de una semana (7 días) -> Rojo Crítico con parpadeo
+  if (diasRestantes <= 7) {
+    const dias = Math.ceil(diasRestantes)
+    return { 
+      texto: `¡Crítico! ${dias} ${dias === 1 ? 'día' : 'días'}`, 
+      clases: 'bg-red-100 text-red-700 border border-red-400 font-bold animate-pulse' 
+    }
+  }
+
+  // 3. Menos de 1 año -> Naranja de advertencia
+  if (aniosRestantes < 1) {
+    return { 
+      texto: `Próximo: ${aniosRestantes.toFixed(1)} años`, 
+      clases: 'bg-orange-100 text-orange-700 border border-orange-300 font-semibold' 
+    }
+  }
+
+  // 4. Más de 1 año -> Verde seguro
+  return { 
+    texto: `${aniosRestantes.toFixed(1)} años rest.`, 
+    clases: 'bg-green-100 text-green-700 border border-green-300' 
+  }
+}
+
 function ConcertsPage() {
   const navigate = useNavigate()
   const { concerts, loading, error, removeConcert } = useConcerts()
@@ -30,9 +79,21 @@ function ConcertsPage() {
 
   const total = concerts.length
 
+  // Contador dinámico para la métrica superior (Conciertos en estado Crítico o Próximo)
+  const proximosACaducar = concerts.filter(c => {
+    const fechaConcierto = new Date(c.date)
+    if (isNaN(fechaConcierto.getTime())) return false
+    
+    const fechaCaducidad = new Date(fechaConcierto)
+    fechaCaducidad.setFullYear(fechaCaducidad.getFullYear() + 5)
+    
+    const dias = (fechaCaducidad.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+    return dias > 0 && dias <= 365.25 // Cuenta si le queda menos de un año pero no ha caducado
+  }).length
+
   const metrics: Array<[string, string]> = [
     ['Conciertos registrados', String(total)],
-    ['Próximos a caducar', '0'],
+    ['Próximos a caducar', String(proximosACaducar)],
     ['PDFs generados', '0'],
   ]
 
@@ -83,45 +144,53 @@ function ConcertsPage() {
                   <th className="p-3 text-left font-medium">Ciudad</th>
                   <th className="p-3 text-left font-medium">Provincia</th>
                   <th className="p-3 text-left font-medium">Fecha</th>
-                  <th className="p-3 text-left font-medium">Estado</th>
+                  <th className="p-3 text-left font-medium">Plazo Reclamación</th>
                   <th className="p-3 text-left font-medium">Realizado</th>
                   <th className="p-3 text-left font-medium">Precio</th>
                   <th className="p-3 text-right font-medium">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {concerts.map((c) => (
-                  <tr key={c.id} className="border-t border-line">
-                    <td className="p-3 font-medium">{c.showTitle}</td>
-                    <td className="p-3 text-muted">{c.city}</td>
-                    <td className="p-3 text-muted">{c.province}</td>
-                    <td className="p-3 text-muted">{c.date}</td>
-                    <td className="p-3 text-muted">{c.status ?? '—'}</td>
-                    <td className="p-3">
-                      <span className={c.performed ? 'badge-neutral' : 'badge-warn'}>
-                        {c.performed ? 'Sí' : 'No'}
-                      </span>
-                    </td>
-                    <td className="p-3 text-muted">{c.ticketPrice} €</td>
-                    <td className="p-3 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => navigate(`/concerts/${c.id}`)}
-                          className="btn-ghost btn-sm"
-                        >
-                          Reclamar
-                        </button>
-                        <button
-                          onClick={() => handleDelete(c.id)}
-                          disabled={deletingId === c.id}
-                          className="btn-ghost btn-sm text-red-600"
-                        >
-                          {deletingId === c.id ? 'Eliminando…' : 'Eliminar'}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {concerts.map((c) => {
+                  const infoCaducidad = getCaducidadInfo(c.date)
+                  return (
+                    <tr key={c.id} className="border-t border-line">
+                      <td className="p-3 font-medium">{c.showTitle}</td>
+                      <td className="p-3 text-muted">{c.city}</td>
+                      <td className="p-3 text-muted">{c.province}</td>
+                      <td className="p-3 text-muted">{c.date}</td>
+                      <td className="p-3">
+                        <span className={`px-2.5 py-1 rounded-md text-xs font-medium inline-block ${infoCaducidad.clases}`}>
+                          {infoCaducidad.texto}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        <span className={c.performed ? 'badge-neutral' : 'badge-warn'}>
+                          {c.performed ? 'Sí' : 'No'}
+                        </span>
+                      </td>
+                      <td className="p-3 text-muted">{c.ticketPrice} €</td>
+                      <td className="p-3 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => navigate(`/concerts/${c.id}`)}
+                            className="btn-ghost btn-sm"
+                            disabled={infoCaducidad.texto === 'Caducado'}
+                          >
+                            Reclamar
+                          </button>
+                          <button
+                            onClick={() => handleDelete(c.id)}
+                            disabled={deletingId === c.id}
+                            className="btn-ghost btn-sm text-red-600"
+                          >
+                            {deletingId === c.id ? 'Eliminando…' : 'Eliminar'}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
