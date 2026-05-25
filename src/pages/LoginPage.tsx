@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 //Para evitar conflicto cambiamos nombre de import
 import { login as loginService } from '../services/authService'
@@ -11,8 +11,9 @@ import Footer from '../components/Footer'
 function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
   // Mensaje informativo que llega de otras páginas (p. ej. al hacerse músico)
-  const info = (location.state as { info?: string } | null)?.info ?? null
+  const info = searchParams.get('info') ?? (location.state as { info?: string } | null)?.info ?? null
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
