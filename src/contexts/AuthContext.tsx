@@ -71,7 +71,7 @@ function decodeToken(token: string): { user: AuthUser; token: string } | null {
 interface AuthContextValue {
   state: AuthState
   login: (token: string) => void
-  logout: (messaje: string) => void;
+  logout: (messaje?: string) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
