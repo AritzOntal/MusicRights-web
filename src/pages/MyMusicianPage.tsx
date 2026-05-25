@@ -91,12 +91,15 @@ function MyMusicianPage() {
 
     try {
       await becomeMusician(payload)
-      // Forza logout para actualizar el JWT ya que el back lo ha cambiado
-      logout()
+      // Navegamos PRIMERO con el mensaje (state) y cerramos sesión DESPUÉS.
+      // Si hiciéramos logout antes, el ProtectedRoute de esta página redirigiría
+      // a /login sin el state y se perdería el mensaje de confirmación.
       navigate('/login', {
         replace: true,
         state: { info: 'Te acabas de hacer músico. Vuelve a iniciar sesión para empezar a gestionar.' },
       })
+      // Limpia el JWT viejo (rol USER) para forzar re-login con el nuevo (MUSICIAN)
+      logout()
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 400) {
