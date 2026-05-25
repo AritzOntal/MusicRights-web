@@ -43,7 +43,6 @@ function MusicianDetailPage() {
   const rows: Array<[string, string]> = musician
     ? [
         ['Nombre', fullName],
-        ['DNI', musician.dni],
         ['Fecha de nacimiento', musician.birthDate ?? '—'],
         ['Afiliado a SGAE', musician.affiliated ? 'Sí' : 'No'],
         ['Nº de afiliación', musician.affiliatedNumber ? String(musician.affiliatedNumber) : '—'],
