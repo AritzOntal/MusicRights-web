@@ -8,7 +8,15 @@ export async function becomeMusician(input: NewMusician): Promise<Musician> {
     return response.data
 }
 
+// Obtiene un músico específico por su ID
 export async function getMusicianById(id: number): Promise<Musician> {
     const response = await apiClient.get<Musician>(`/v1/musicians/${id}`)
+    return response.data
+}
+
+// NUEVA: Obtiene la lista completa de músicos desde el backend
+// Es la que usará AdminPage para pintar los 10 músicos del script
+export async function getAllMusicians(): Promise<Musician[]> {
+    const response = await apiClient.get<Musician[]>('/v1/musicians')
     return response.data
 }

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useAuth } from '../contexts/AuthContext'
 import { getAllUsers, updateUserRole } from '../services/userService'
+// IMPORTANTE: Asegúrate de tener importada tu función para traer músicos de la API
+import { getAllMusicians } from '../services/musicianService'
 import { USER_ROLES } from '../types/user'
 import type { User, UserRole } from '../types/user'
 import AppLayout from '../components/AppLayout'
@@ -11,8 +13,9 @@ type CounterView = null | 'users' | 'musicians'
 function AdminPage() {
     const { state } = useAuth()
 
-    // Cargamos los usuarios una vez y los guardamos en memoria; la búsqueda es local.
+    // Estados independientes para usuarios y músicos de la base de datos
     const [users, setUsers] = useState<User[]>([])
+    const [musicians, setMusicians] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [feedback, setFeedback] = useState<string | null>(null)
@@ -20,13 +23,15 @@ function AdminPage() {
     const [view, setView] = useState<CounterView>(null)
 
     useEffect(() => {
-        getAllUsers()
-            .then((data) => {
-                setUsers(data)
+        // Ejecutamos ambas peticiones en paralelo al cargar la página
+        Promise.all([getAllUsers(), getAllMusicians()])
+            .then(([usersData, musiciansData]) => {
+                setUsers(usersData)
+                setMusicians(musiciansData)
                 setError(null)
             })
             .catch((err) => {
-                setError('No se pudieron cargar los usuarios')
+                setError('No se pudieron cargar los datos del servidor')
                 console.error(err)
             })
             .finally(() => setLoading(false))
@@ -35,7 +40,6 @@ function AdminPage() {
     async function handleRoleChange(user: User, newRole: UserRole) {
         const previousRole = user.role
 
-        // Cambiamos en pantalla antes de tener confirmación
         setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, role: newRole } : u)))
         setFeedback(null)
 
@@ -57,17 +61,18 @@ function AdminPage() {
         setView((prev) => (prev === v ? null : v))
     }
 
-    // Métricas
+    // Métricas reales conectadas a sus respectivas tablas de MariaDB
     const totalUsers = users.length
-    const totalMusicians = users.filter((u) => u.musician).length
+    const totalMusicians = musicians.length // Ahora sí lee los 10 del script
 
     const q = search.trim().toLowerCase()
-    // Resultados de búsqueda (tarjetas)
-    const searchResults = q ? users.filter((u) => u.username.toLowerCase().includes(q)) : []
-    // Lista a mostrar en la tabla al pinchar un contador
-    const tableUsers = view === 'musicians' ? users.filter((u) => u.musician) : users
 
-    // Un <select> de rol reutilizable
+    // Resultados de búsqueda local por nombre de usuario
+    const searchResults = q ? users.filter((u) => u.username.toLowerCase().includes(q)) : []
+
+    // Control de vista activa
+    const isMusicianView = view === 'musicians'
+
     function roleSelect(u: User) {
         const isSelf = state.user?.username === u.username
         return (
@@ -89,28 +94,26 @@ function AdminPage() {
         <AppLayout>
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-3xl">Usuarios</h1>
+                    <h1 className="text-3xl">Panel de Administración</h1>
                     <p className="text-sm text-muted mt-1">
-                        Hola, <span className="text-ink font-medium">{state.user?.username}</span>. Busca un usuario o pincha un contador para gestionar roles.
+                        Hola, <span className="text-ink font-medium">{state.user?.username}</span>. Gestiona los usuarios o revisa los músicos registrados.
                     </p>
                 </div>
 
-                {/* Contadores clicables: despliegan la tabla correspondiente */}
+                {/* Contadores */}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:max-w-md">
                     <button
                         onClick={() => toggleView('users')}
-                        className={`text-left rounded-xl border p-4 transition-colors ${
-                            view === 'users' ? 'border-accent bg-accent-soft' : 'border-line bg-paper hover:border-line-strong'
-                        }`}
+                        className={`text-left rounded-xl border p-4 transition-colors ${view === 'users' ? 'border-accent bg-accent-soft' : 'border-line bg-paper hover:border-line-strong'
+                            }`}
                     >
                         <div className="text-xs text-muted">Total de usuarios</div>
                         <div className="font-serif text-2xl font-semibold mt-1">{totalUsers}</div>
                     </button>
                     <button
                         onClick={() => toggleView('musicians')}
-                        className={`text-left rounded-xl border p-4 transition-colors ${
-                            view === 'musicians' ? 'border-accent bg-accent-soft' : 'border-line bg-paper hover:border-line-strong'
-                        }`}
+                        className={`text-left rounded-xl border p-4 transition-colors ${view === 'musicians' ? 'border-accent bg-accent-soft' : 'border-line bg-paper hover:border-line-strong'
+                            }`}
                     >
                         <div className="text-xs text-muted">Total de músicos</div>
                         <div className="font-serif text-2xl font-semibold mt-1">{totalMusicians}</div>
@@ -131,10 +134,10 @@ function AdminPage() {
                     </p>
                 )}
 
-                {loading && <p className="text-muted">Cargando usuarios…</p>}
+                {loading && <p className="text-muted">Cargando datos del sistema…</p>}
                 {error && <p className="text-red-600">{error}</p>}
 
-                {/* 1) Si hay búsqueda: resultados en tarjetas (sin tabla) */}
+                {/* 1) Búsqueda activa */}
                 {!loading && !error && q !== '' && (
                     searchResults.length === 0 ? (
                         <div className="card p-10 text-center text-muted">
@@ -162,38 +165,54 @@ function AdminPage() {
                     )
                 )}
 
-                {/* 2) Sin búsqueda y con contador activo: tabla de la categoría */}
+                {/* 2) Tabla dinámica según el botón seleccionado */}
                 {!loading && !error && q === '' && view !== null && (
                     <div className="card overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead className="border-b border-line text-muted">
                                 <tr>
                                     <th className="p-3 text-left font-medium">ID</th>
-                                    <th className="p-3 text-left font-medium">Usuario</th>
-                                    <th className="p-3 text-left font-medium">Rol</th>
-                                    <th className="p-3 text-left font-medium">Músico</th>
+                                    <th className="p-3 text-left font-medium">
+                                        {isMusicianView ? 'Nombre Completo' : 'Usuario'}
+                                    </th>
+                                    <th className="p-3 text-left font-medium">
+                                        {isMusicianView ? 'DNI' : 'Rol'}
+                                    </th>
+                                    <th className="p-3 text-left font-medium">
+                                        {isMusicianView ? 'Email de Contacto' : 'Ficha Músico'}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {tableUsers.map((u) => (
-                                    <tr key={u.id} className="border-t border-line">
-                                        <td className="p-3 text-muted">{u.id}</td>
-                                        <td className="p-3 font-medium">
-                                            {u.username}
-                                            {state.user?.username === u.username && (
-                                                <span className="ml-2 text-xs text-subtle">(tú)</span>
-                                            )}
-                                        </td>
-                                        <td className="p-3">{roleSelect(u)}</td>
-                                        <td className="p-3 text-muted">{u.musician ? 'Sí' : '—'}</td>
-                                    </tr>
-                                ))}
+                                {isMusicianView
+                                    ? musicians.map((m) => (
+                                        <tr key={m.id} className="border-t border-line">
+                                            <td className="p-3 text-muted">{m.id}</td>
+                                            <td className="p-3 font-medium">{m.firstName} {m.lastName}</td>
+                                            <td className="p-3 text-ink">{m.dni}</td>
+                                            <td className="p-3 text-muted">{m.email || '—'}</td>
+                                        </tr>
+                                    ))
+                                    : users.map((u) => (
+                                        <tr key={u.id} className="border-t border-line">
+                                            <td className="p-3 text-muted">{u.id}</td>
+                                            <td className="p-3 font-medium">
+                                                {u.username}
+                                                {state.user?.username === u.username && (
+                                                    <span className="ml-2 text-xs text-subtle">(tú)</span>
+                                                )}
+                                            </td>
+                                            <td className="p-3">{roleSelect(u)}</td>
+                                            <td className="p-3 text-muted">{u.musician ? 'Sí' : '—'}</td>
+                                        </tr>
+                                    ))
+                                }
                             </tbody>
                         </table>
                     </div>
                 )}
 
-                {/* 3) Estado inicial: ni búsqueda ni contador */}
+                {/* 3) Estado inicial vacio */}
                 {!loading && !error && q === '' && view === null && (
                     <div className="card p-8 text-center text-muted">
                         Busca un usuario por su nombre, o pincha un contador para ver la lista completa.
