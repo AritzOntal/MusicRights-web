@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
 //Para evitar conflicto cambiamos nombre de import
 import { login as loginService } from '../services/authService'
@@ -10,6 +10,9 @@ import Footer from '../components/Footer'
 
 function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  // Mensaje informativo que llega de otras páginas (p. ej. al hacerse músico)
+  const info = (location.state as { info?: string } | null)?.info ?? null
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -55,6 +58,12 @@ function LoginPage() {
           <h1 className="text-3xl text-accent">MusicRights</h1>
           <p className="text-sm text-muted mt-2">Gestión de derechos de autor para músicos</p>
         </div>
+
+        {info && (
+          <div className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-800">
+            {info}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="card p-7 space-y-5">
           <h2 className="text-lg">Iniciar sesión</h2>

@@ -95,7 +95,7 @@ function MyMusicianPage() {
       logout()
       navigate('/login', {
         replace: true,
-        state: { info: 'Te has registrado como músico. Inicia sesión de nuevo para acceder.' },
+        state: { info: 'Te acabas de hacer músico. Vuelve a iniciar sesión para empezar a gestionar.' },
       })
     } catch (err) {
       if (axios.isAxiosError(err)) {
