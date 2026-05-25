@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom' // <- AÑADE ESTO
 import { becomeMusician } from '../services/musicianService'
 import { useAuth } from '../contexts/AuthContext'
 import type { NewMusician } from '../types/musician'
@@ -18,6 +19,7 @@ function MyMusicianPage() {
   const [affiliated, setAffiliated] = useState(false)
   const [performanceFee, setPerformanceFee] = useState('') // string para validar
   const [affiliatedNumber, setAffiliatedNumber] = useState('')
+  const navigate = useNavigate()
 
   // Datos de contacto del organizador (para el formulario de SGAE)
   const [address, setAddress] = useState('')
