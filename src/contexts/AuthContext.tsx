@@ -3,8 +3,6 @@ import type { ReactNode } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import type { AuthUser, JwtPayload, Role } from '../types/auth'
 import { TOKEN_STORAGE_KEY } from '../services/authService'
-import { useNavigate } from 'react-router-dom'
-
 
 // MODELO DE PIZARRA O "PLANTILLA"
 interface AuthState {
@@ -71,7 +69,7 @@ function decodeToken(token: string): { user: AuthUser; token: string } | null {
 interface AuthContextValue {
   state: AuthState
   login: (token: string) => void
-  logout: (messaje?: string) => void;
+  logout: () => void
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -81,8 +79,6 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   //COMO useState PERO MÁS COMPLEJO PORQUE HACE ACCION DE LLAMAR A REDUCER PARA QUE CAMBIE
   const [state, dispatch] = useReducer(authReducer, initialState)
-  const navigate = useNavigate()
-
 
   // Al montar la app, intentamos restaurar la sesión desde localStorage
   useEffect(() => {
@@ -111,29 +107,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'LOGIN', payload: decoded })
   }
 
-  function logout(message?: string) {
-  console.log("=== INICIO LOGOUT ===")
-  console.log("Valor recibido en 'message':", message)
-  console.log("Tipo de 'message':", typeof message)
-
-  localStorage.removeItem(TOKEN_STORAGE_KEY)
-  
-  if (message && message.trim() !== '') {
-    console.log("-> SÍ ENTRA EN EL IF. Generando URL con parámetros...");
-    const searchParams = new URLSearchParams({ info: message })
-    const urlFinal = `/login?${searchParams.toString()}`
-    console.log("URL de destino:", urlFinal)
-    
-    navigate(urlFinal, { replace: true })
-  } else {
-    console.log("-> NO ENTRA EN EL IF. Navegando a limpio...");
-    navigate('/login', { replace: true })
+  function logout() {
+    localStorage.removeItem(TOKEN_STORAGE_KEY)
+    dispatch({ type: 'LOGOUT' })
   }
-
-  console.log("Disparando acción LOGOUT al reducer...");
-  dispatch({ type: 'LOGOUT' })
-  console.log("=== FIN LOGOUT ===")
-}
 
   //todo lo que este dentro de esto (childrens) podran usar el auth
   return (

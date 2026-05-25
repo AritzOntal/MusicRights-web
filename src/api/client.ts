@@ -14,29 +14,23 @@ export const apiClient = axios.create({
 
 // Interceptor de REQUEST: añade el JWT a cada petición si existe
 //El parametro config contiene todo el contenido (URL, HEADERS....)
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem(TOKEN_KEY)
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+// Interceptor de RESPONSE
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // 1. Borramos el token para cerrar la sesión
+      //Borramos el token para que el AuthContex la próxima vez lo vea vacío
       localStorage.removeItem(TOKEN_KEY)
-
-      console.log("URL DETECTADA EN EL 401:", error.config?.url)
-
-      // 2. Comprobamos si el error viene de la petición de "hacerse músico"
-      // Revisa si la URL de tu API para hacerse músico contiene la palabra 'musician' o similar
-      if (error.config?.url?.includes('musician')) {
-        const searchParams = new URLSearchParams({ 
-          info: 'Te acabas de hacer músico. Vuelve a iniciar sesión para empezar a gestionar.' 
-        })
-        
-        // Redirigimos por código asignando los parámetros directamente a la URL
-        window.location.href = `/login?${searchParams.toString()}`
-        return Promise.reject(error)
-      }
     }
-    
-    // Devolvemos el error para que lo pille el try catch de la llamada estándar
+    //Devolvemos el error para que lo pille el try catch de la llamada.
     return Promise.reject(error)
   },
 )
