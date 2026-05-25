@@ -112,16 +112,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function logout(message?: string) {
-  dispatch({ type: 'LOGOUT' })
-  localStorage.removeItem(TOKEN_STORAGE_KEY)
-  
-  if (message) {
-    // Codificamos el texto para que sea seguro en la URL
-    const searchParams = new URLSearchParams({ info: message })
-    navigate(`/login?${searchParams.toString()}`, { replace: true })
-  } else {
-    navigate('/login', { replace: true })
-  }
+    localStorage.removeItem(TOKEN_STORAGE_KEY)
+    
+    if (message) {
+      // Codificamos el texto para que sea seguro en la URL
+      const searchParams = new URLSearchParams({ info: message })
+      navigate(`/login?${searchParams.toString()}`, { replace: true })
+    } else {
+      navigate('/login', { replace: true })
+    }
+    dispatch({ type: 'LOGOUT' })
 }
 
   //todo lo que este dentro de esto (childrens) podran usar el auth
