@@ -12,6 +12,16 @@ interface ProtectedRouteProps {
 function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
     const { state } = useAuth()
 
+    if (!state.user) {
+        // 1. Averiguamos si viene de la página de músico
+        const mensaje = location.pathname === '/musicians/me'
+            ? 'Te acabas de hacer músico. Vuelve a iniciar sesión para empezar a gestionar.'
+            : null
+
+        // 2. INYECTAMOS EL MENSAJE AQUÍ (en el state de la navegación)
+        return <Navigate to="/login" state={{ info: mensaje }} replace />
+    }
+
     // 1) Antes de nada cuando este cargando, mostramos placeholder
     if (state.isLoading) {
         return (
