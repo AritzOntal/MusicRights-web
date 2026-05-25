@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { becomeMusician } from '../services/musicianService'
 import { useAuth } from '../contexts/AuthContext'
@@ -10,7 +9,6 @@ const DNI_REGEX = /^\d{8}[A-Za-z]$/
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function MyMusicianPage() {
-  const navigate = useNavigate()
   const { logout } = useAuth()
 
   const [firstName, setFirstName] = useState('')
@@ -92,11 +90,9 @@ function MyMusicianPage() {
     try {
       await becomeMusician(payload)
       // Forza logout para actualizar el JWT ya que el back lo ha cambiado
-      logout()
-      navigate('/login', {
-        replace: true,
-        state: { info: 'Te acabas de hacer músico. Vuelve a iniciar sesión para empezar a gestionar.' },
-      })
+      //Pero le pasa mensaje efimero a logout
+      logout({ info: 'Te acabas de hacer músico. Vuelve a iniciar sesión para empezar a gestionar.' })
+      
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 400) {

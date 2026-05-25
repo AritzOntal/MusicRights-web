@@ -3,6 +3,8 @@ import type { ReactNode } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import type { AuthUser, JwtPayload, Role } from '../types/auth'
 import { TOKEN_STORAGE_KEY } from '../services/authService'
+import { useNavigate } from 'react-router-dom'
+
 
 // MODELO DE PIZARRA O "PLANTILLA"
 interface AuthState {
@@ -69,7 +71,7 @@ function decodeToken(token: string): { user: AuthUser; token: string } | null {
 interface AuthContextValue {
   state: AuthState
   login: (token: string) => void
-  logout: () => void
+  logout: (redirectState?: any) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -79,6 +81,8 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   //COMO useState PERO MÁS COMPLEJO PORQUE HACE ACCION DE LLAMAR A REDUCER PARA QUE CAMBIE
   const [state, dispatch] = useReducer(authReducer, initialState)
+  const navigate = useNavigate()
+
 
   // Al montar la app, intentamos restaurar la sesión desde localStorage
   useEffect(() => {
@@ -107,9 +111,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'LOGIN', payload: decoded })
   }
 
-  function logout() {
-    localStorage.removeItem(TOKEN_STORAGE_KEY)
+  function logout(redirectState?: any) {
     dispatch({ type: 'LOGOUT' })
+    localStorage.removeItem(TOKEN_STORAGE_KEY)
+    navigate('/login', { replace: true, state: redirectState })
   }
 
   //todo lo que este dentro de esto (childrens) podran usar el auth
