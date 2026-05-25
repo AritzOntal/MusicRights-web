@@ -11,10 +11,10 @@ function ConcertCreatePage() {
   const [showTitle, setShowTitle] = useState('')
   const [city, setCity] = useState('')
   const [province, setProvince] = useState('')
-  const [date, setDate] = useState('')          // input TIPO DATE
-  const [status, setStatus] = useState('')       // '' = sin especificar
+  const [date, setDate] = useState('')          
+  const [status, setStatus] = useState('')       
   const [performed, setPerformed] = useState(false)
-  const [ticketPrice, setTicketPrice] = useState('') // string para validar
+  const [ticketPrice, setTicketPrice] = useState('')
 
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
