@@ -93,8 +93,8 @@ function MyMusicianPage() {
       await becomeMusician(payload)
       // Forza logout para actualizar el JWT ya que el back lo ha cambiado
       //Pero le pasa mensaje efimero a logout
-      logout({ info: 'Te acabas de hacer músico. Vuelve a iniciar sesión para empezar a gestionar.' })
-      
+      logout('Te acabas de hacer músico. Vuelve a iniciar sesión para empezar a gestionar.')
+
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 400) {

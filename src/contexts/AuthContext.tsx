@@ -71,7 +71,7 @@ function decodeToken(token: string): { user: AuthUser; token: string } | null {
 interface AuthContextValue {
   state: AuthState
   login: (token: string) => void
-  logout: (redirectState?: any) => void;
+  logout: (messaje: string) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -111,11 +111,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'LOGIN', payload: decoded })
   }
 
-  function logout(redirectState?: any) {
-    dispatch({ type: 'LOGOUT' })
-    localStorage.removeItem(TOKEN_STORAGE_KEY)
-    navigate('/login', { replace: true, state: redirectState })
+  function logout(message?: string) {
+  dispatch({ type: 'LOGOUT' })
+  localStorage.removeItem(TOKEN_STORAGE_KEY)
+  
+  if (message) {
+    // Codificamos el texto para que sea seguro en la URL
+    const searchParams = new URLSearchParams({ info: message })
+    navigate(`/login?${searchParams.toString()}`, { replace: true })
+  } else {
+    navigate('/login', { replace: true })
   }
+}
 
   //todo lo que este dentro de esto (childrens) podran usar el auth
   return (
