@@ -6,7 +6,6 @@ import { login as loginService } from '../services/authService'
 import { useAuth } from '../contexts/AuthContext'
 import Footer from '../components/Footer'
 
-
 function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
