@@ -91,15 +91,15 @@ function MyMusicianPage() {
 
     try {
       await becomeMusician(payload)
-      // Navegamos PRIMERO con el mensaje (state) y cerramos sesión DESPUÉS.
-      // Si hiciéramos logout antes, el ProtectedRoute de esta página redirigiría
-      // a /login sin el state y se perdería el mensaje de confirmación.
-      navigate('/login', {
-        replace: true,
-        state: { info: 'Te acabas de hacer músico. Vuelve a iniciar sesión para empezar a gestionar.' },
-      })
+      // Guardamos el mensaje en sessionStorage: sobrevive al logout y a cualquier
+      // redirect del ProtectedRoute (al contrario que el state del router, que se perdía).
+      sessionStorage.setItem(
+        'musicrights.flash',
+        'Te acabas de hacer músico. Vuelve a iniciar sesión para empezar a gestionar.',
+      )
       // Limpia el JWT viejo (rol USER) para forzar re-login con el nuevo (MUSICIAN)
       logout()
+      navigate('/login', { replace: true })
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 400) {

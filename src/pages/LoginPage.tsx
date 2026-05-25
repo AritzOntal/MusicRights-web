@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 //Para evitar conflicto cambiamos nombre de import
 import { login as loginService } from '../services/authService'
@@ -8,9 +8,12 @@ import Footer from '../components/Footer'
 
 function LoginPage() {
   const navigate = useNavigate()
-  const location = useLocation()
-  // Mensaje informativo que llega de otras páginas (p. ej. al hacerse músico)
-  const info = (location.state as { info?: string } | null)?.info ?? null
+  // Mensaje "flash" de una sola vez (p. ej. al hacerse músico): lo leemos de
+  // sessionStorage al montar y lo limpiamos para que no reaparezca.
+  const [info] = useState<string | null>(() => sessionStorage.getItem('musicrights.flash'))
+  useEffect(() => {
+    sessionStorage.removeItem('musicrights.flash')
+  }, [])
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
