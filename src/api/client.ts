@@ -21,6 +21,8 @@ apiClient.interceptors.response.use(
       // 1. Borramos el token para cerrar la sesión
       localStorage.removeItem(TOKEN_KEY)
 
+      console.log("URL DETECTADA EN EL 401:", error.config?.url)
+
       // 2. Comprobamos si el error viene de la petición de "hacerse músico"
       // Revisa si la URL de tu API para hacerse músico contiene la palabra 'musician' o similar
       if (error.config?.url?.includes('musician')) {
