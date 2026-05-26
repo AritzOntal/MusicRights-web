@@ -60,7 +60,7 @@ function DocumentsPage() {
     <AppLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl">Mis Documentos</h1>
+          <h1 className="text-3xl">Mis documentos</h1>
           <p className="text-sm text-muted mt-1">
             PDFs de SGAE que has generado. Haz clic para volver a descargarlos.
           </p>

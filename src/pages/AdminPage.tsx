@@ -94,7 +94,7 @@ function AdminPage() {
         <AppLayout>
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-3xl">Panel de Administración</h1>
+                    <h1 className="text-3xl">Panel de administración</h1>
                     <p className="text-sm text-muted mt-1">
                         Hola, <span className="text-ink font-medium">{state.user?.username}</span>. Gestiona los usuarios o revisa los músicos registrados.
                     </p>

@@ -8,48 +8,48 @@ import { deleteConcert } from '../services/concertService'
 function getCaducidadInfo(dateString: string) {
   const fechaConcierto = new Date(dateString)
   if (isNaN(fechaConcierto.getTime())) {
-    return { texto: 'Fecha inválida', clases: 'bg-gray-100 text-gray-700' }
+    return { texto: 'Fecha inválida', clases: 'bg-paper text-subtle border border-line' }
   }
 
   const fechaCaducidad = new Date(fechaConcierto)
   fechaCaducidad.setFullYear(fechaCaducidad.getFullYear() + 5)
-  
+
   const hoy = new Date()
   const diferenciaTiempo = fechaCaducidad.getTime() - hoy.getTime()
-  
+
   const milisegundosEnDia = 1000 * 60 * 60 * 24
   const diasRestantes = diferenciaTiempo / milisegundosEnDia
   const aniosRestantes = diasRestantes / 365.25
 
-  // 1. Ya ha caducado
+  // 1. Ya ha caducado -> rojo de marca suave (acción ya perdida)
   if (diasRestantes <= 0) {
-    return { 
-      texto: 'Caducado', 
-      clases: 'bg-red-100 text-red-700 border border-red-300 font-semibold' 
+    return {
+      texto: 'Caducado',
+      clases: 'bg-accent-soft text-accent border border-accent/30 font-semibold',
     }
   }
-  
-  // 2. Menos de una semana (7 días) -> Rojo Crítico con parpadeo
+
+  // 2. Menos de una semana (7 días) -> urgencia máxima: rojo de marca sólido
   if (diasRestantes <= 7) {
     const dias = Math.ceil(diasRestantes)
-    return { 
-      texto: `¡Crítico! ${dias} ${dias === 1 ? 'día' : 'días'}`, 
-      clases: 'bg-red-100 text-red-700 border border-red-400 font-bold animate-pulse' 
+    return {
+      texto: `Caduca en ${dias} ${dias === 1 ? 'día' : 'días'}`,
+      clases: 'bg-accent text-white border border-accent font-semibold',
     }
   }
 
-  // 3. Menos de 1 año -> Naranja de advertencia
+  // 3. Menos de 1 año -> advertencia: ámbar sobrio
   if (aniosRestantes < 1) {
-    return { 
-      texto: `Próximo: ${aniosRestantes.toFixed(1)} años`, 
-      clases: 'bg-orange-100 text-orange-700 border border-orange-300 font-semibold' 
+    return {
+      texto: `Caduca en ${aniosRestantes.toFixed(1).replace('.', ',')} años`,
+      clases: 'bg-warn-soft text-warn border border-warn/20 font-medium',
     }
   }
 
-  // 4. Más de 1 año -> Verde seguro
-  return { 
-    texto: `${aniosRestantes.toFixed(1)} años rest.`, 
-    clases: 'bg-green-100 text-green-700 border border-green-300' 
+  // 4. Más de 1 año -> margen de sobra: neutro sobrio
+  return {
+    texto: `${aniosRestantes.toFixed(1).replace('.', ',')} años restantes`,
+    clases: 'bg-paper text-muted border border-line',
   }
 }
 
@@ -102,7 +102,7 @@ function ConcertsPage() {
       <div className="space-y-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div>
-            <h1 className="text-3xl">Mis Conciertos</h1>
+            <h1 className="text-3xl">Mis conciertos</h1>
             <p className="text-sm text-muted mt-1">
               Registra tus conciertos y genera el documento oficial de SGAE en un clic.
             </p>
@@ -144,7 +144,7 @@ function ConcertsPage() {
                   <th className="p-3 text-left font-medium">Ciudad</th>
                   <th className="p-3 text-left font-medium">Provincia</th>
                   <th className="p-3 text-left font-medium">Fecha</th>
-                  <th className="p-3 text-left font-medium">Plazo Reclamación</th>
+                  <th className="p-3 text-left font-medium">Plazo de reclamación</th>
                   <th className="p-3 text-left font-medium">Realizado</th>
                   <th className="p-3 text-left font-medium">Precio</th>
                   <th className="p-3 text-right font-medium">Acciones</th>
