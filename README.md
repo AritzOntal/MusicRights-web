@@ -28,6 +28,15 @@ Frontend de **MusicRights**, una aplicación que genera automáticamente el docu
 
 ---
 
+## Tests
+
+Los tests del frontend se desarrollaron con **Vitest** y **React Testing Library** en la iteración anterior, [MusicRightsFull](https://github.com/AritzOntal/MusicRightsFull):
+
+- **Unitarios**: el reducer de autenticación (acciones `INITIALIZE`, `LOGIN` y `LOGOUT`) y el hook `useWorks`, con el servicio simulado.
+- **Integración**: el formulario de login muestra el error ante un 401, y el buscador del dashboard filtra correctamente la tabla.
+
+---
+
 ## Ejecución en local
 
 ```bash
